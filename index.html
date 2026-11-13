@@ -139,9 +139,9 @@
   .card.open .subs-more .chev { transform: rotate(180deg); }
   .subs-more:hover .chev { transform: translateY(1px); }
   .card.open .subs-more:hover .chev { transform: rotate(180deg) translateY(1px); }
-  /* 줄 오른쪽 끝에 화살표 한 개 자리(--sa-room)를 비워 둔다 — 호버로 칩이 넓어져도 줄이 바뀌지 않게 */
+  /* 칩 줄 (--sa-room: 호버 때 칩이 넓어지는 폭 = 화살표 12px + 간격 4px) */
   .subs-row { --sa-room: calc(12px + var(--s-4)); flex-basis: 100%; min-width: 0; display: flex; flex-wrap: wrap; gap: var(--s-8);
-    padding: var(--s-4) calc(var(--s-4) + var(--sa-room)) var(--s-4) var(--s-4); margin: calc(var(--s-4) * -1); }
+    padding: var(--s-4); margin: calc(var(--s-4) * -1); }
   .subs a { flex: none; display: inline-flex; align-items: center; height: 24px; padding: 0 var(--s-8); border-radius: var(--r-4);
     background: var(--chip); color: var(--text); font-size: var(--fs-xs); line-height: 1; white-space: nowrap; text-decoration: none;
     transition: background-color var(--dur) ease, color var(--dur) ease; }
