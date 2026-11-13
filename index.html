@@ -2,34 +2,327 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>아이티스 마케팅 도구</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232563eb'/><path d='M9 22V13M16 22V9M23 22v-6' stroke='white' stroke-width='3' stroke-linecap='round'/></svg>">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1014" media="(prefers-color-scheme: dark)">
+<title>아이티스 포털</title>
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
-  :root { --bg: #f6f7f9; --card: #fff; --text: #111827; --muted: #6b7280; --line: #e5e7eb; --accent: #2563eb; }
-  @media (prefers-color-scheme: dark) { :root { --bg: #0f1115; --card: #171a21; --text: #e5e7eb; --muted: #9ca3af; --line: #262b36; --accent: #60a5fa; } }
+  :root {
+    color-scheme: light dark;
+    --bg: #f5f6f8; --card: #ffffff; --text: #111827; --muted: #5b6472; --faint: #8b93a1;
+    --line: #e4e7ec; --line-strong: #cfd5de; --accent: #2563eb; --accent-ink: #ffffff; --accent-soft: #eef3ff;
+    --chip: #f2f4f7; --warn: #b45309; --warn-soft: #fff7ed;
+    --tone-1: #2563eb; --tone-1-soft: #eef3ff;
+    --tone-2: #0f9f6e; --tone-2-soft: #e9f8f2;
+    --tone-3: #c2410c; --tone-3-soft: #fff1e8;
+    --tone-4: #7c3aed; --tone-4-soft: #f3eeff;
+    --shadow: 0 1px 2px rgba(16, 24, 40, .04), 0 4px 14px rgba(16, 24, 40, .06);
+    --radius: 14px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1014; --card: #161a21; --text: #e6e8ec; --muted: #a2a9b5; --faint: #737b88;
+      --line: #252a33; --line-strong: #353c48; --accent: #6ea8fe; --accent-ink: #0b1220; --accent-soft: #1a2336;
+      --chip: #1f242d; --warn: #f5a524; --warn-soft: #2a1f0d;
+      --tone-1: #6ea8fe; --tone-1-soft: #1a2336;
+      --tone-2: #4ccf9f; --tone-2-soft: #13271f;
+      --tone-3: #fb8a52; --tone-3-soft: #2c1a10;
+      --tone-4: #b294ff; --tone-4-soft: #221b36;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 18px rgba(0, 0, 0, .35);
+    }
+  }
   * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font-family: Pretendard, system-ui, -apple-system, "Segoe UI", sans-serif; }
-  main { max-width: 720px; margin: 0 auto; padding: 64px 16px; }
-  h1 { font-size: 24px; margin: 0 0 6px; }
-  p.sub { margin: 0 0 32px; color: var(--muted); font-size: 14px; }
-  ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
-  a.svc { display: block; padding: 20px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; color: inherit; text-decoration: none; transition: border-color .15s; }
-  a.svc:hover, a.svc:focus-visible { border-color: var(--accent); outline: none; }
-  .name { font-weight: 700; font-size: 16px; }
-  .path { color: var(--accent); font-size: 13px; margin-left: 6px; }
-  .desc { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  [hidden] { display: none !important; }
+  html { -webkit-text-size-adjust: 100%; }
+  @media (pointer: fine) { html { overscroll-behavior: none; } }
+  body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); line-height: 1.5; word-break: keep-all;
+    font-family: 'Pretendard Variable', Pretendard, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+  a, button, input { touch-action: manipulation; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .skip { position: absolute; left: 16px; top: -48px; z-index: 10; background: var(--accent); color: var(--accent-ink);
+    padding: 8px 14px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; }
+  .skip:focus-visible { top: 12px; outline: 2px solid var(--text); outline-offset: 2px; }
+
+  .wrap { max-width: 1280px; margin: 0 auto;
+    padding: 48px max(16px, env(safe-area-inset-right)) 64px max(16px, env(safe-area-inset-left)); }
+
+  /* 머리 */
+  header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px 24px; margin-bottom: 36px; }
+  .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .mark { flex: none; width: 44px; height: 44px; border-radius: 12px; overflow: hidden; }
+  .mark img { display: block; width: 100%; height: 100%; }
+  h1 { font-size: 26px; line-height: 1.25; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+  .lead { margin: 2px 0 0; color: var(--muted); font-size: 14px; text-wrap: pretty; }
+
+  /* 검색 */
+  .search { position: relative; flex: 0 1 340px; min-width: 0; }
+  .field { position: relative; }
+  .search svg.lens { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--faint); pointer-events: none; }
+  .search input { width: 100%; height: 44px; padding: 0 44px 0 40px; border: 1px solid var(--line); border-radius: 12px;
+    background: var(--card); color: var(--text); font: inherit; font-size: 15px; box-shadow: var(--shadow);
+    transition: border-color .15s ease, box-shadow .15s ease; -webkit-appearance: none; appearance: none; }
+  .search input::placeholder { color: var(--faint); }
+  .search input::-webkit-search-cancel-button { display: none; }
+  .search input:hover { border-color: var(--line-strong); }
+  .search input:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft), var(--shadow); }
+  .search kbd { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-family: inherit; font-size: 12px; font-weight: 600; line-height: 1;
+    color: var(--faint); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; padding: 4px 7px; background: var(--bg); }
+  .search .clear { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px;
+    display: none; place-items: center; border: 0; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; }
+  .search .clear:hover { background: var(--chip); color: var(--text); }
+  .search .clear:focus-visible { outline: 2px solid var(--accent); outline-offset: 0; }
+  .search.has-value kbd { display: none; }
+  .search.has-value .clear { display: grid; }
+  @media (pointer: coarse) { .search kbd { display: none; } }
+  .status { margin: 8px 2px 0; min-height: 18px; font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  /* 묶음 */
+  section { margin-top: 36px; scroll-margin-top: 16px; }
+  section:first-of-type { margin-top: 0; }
+  section h2 { font-size: 15px; font-weight: 700; margin: 0 0 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; text-wrap: balance; }
+  section h2 .gi { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: var(--soft); color: var(--tone); flex: none; }
+  section h2 .count { font-size: 12px; font-weight: 600; color: var(--muted); background: var(--chip); border-radius: 999px; padding: 1px 8px; font-variant-numeric: tabular-nums; }
+  section h2 small { font-weight: 400; color: var(--faint); font-size: 13px; }
+  .t1 { --tone: var(--tone-1); --soft: var(--tone-1-soft); }
+  .t2 { --tone: var(--tone-2); --soft: var(--tone-2-soft); }
+  .t3 { --tone: var(--tone-3); --soft: var(--tone-3-soft); }
+  .t4 { --tone: var(--tone-4); --soft: var(--tone-4-soft); }
+
+  /* 카드 */
+  /* 짝수 열: 휴대폰 1 → 태블릿 2 → 데스크톱 4 (4열은 바로 가기 3개가 한 줄에 들어가는 1240px부터) */
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1240px) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .card { position: relative; display: flex; flex-direction: column; min-width: 0; background: var(--card);
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 18px;
+    transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease; }
+  .card:hover { border-color: var(--tone); box-shadow: var(--shadow); transform: translateY(-2px); }
+  .card:active { transform: translateY(0); }
+  .card:has(.main:focus-visible) { outline: 2px solid var(--tone); outline-offset: 2px; border-color: var(--tone); }
+  .card .main { color: inherit; text-decoration: none; display: flex; gap: 14px; align-items: flex-start; min-width: 0; flex: 1; }
+  .card .main::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius); }
+  .card .main:focus-visible { outline: none; }
+  .tile { flex: none; width: 42px; height: 42px; border-radius: 11px; display: grid; place-items: center;
+    background: var(--soft); color: var(--tone); font-weight: 800; font-size: 17px; }
+  .body { min-width: 0; flex: 1; display: flex; flex-direction: column; }
+  .top { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .name { font-weight: 700; font-size: 16px; letter-spacing: -0.01em; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .badge { flex: none; font-size: 11px; font-weight: 600; color: var(--warn); background: var(--warn-soft); border-radius: 999px; padding: 2px 8px; }
+  .go { flex: none; margin-left: auto; color: var(--faint); transition: color .15s ease, transform .15s ease; }
+  .card:hover .go { color: var(--tone); transform: translateX(2px); }
+  .card:hover .go.ext { transform: translate(2px, -2px); }
+  .desc { color: var(--muted); font-size: 13.5px; margin-top: 4px; overflow-wrap: anywhere; text-wrap: pretty; }
+  .url { color: var(--faint); font-size: 12.5px; margin-top: 10px; overflow-wrap: anywhere; }
+  .subs { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line); }
+  .subs-row { flex-basis: 100%; min-width: 0; display: flex; flex-wrap: nowrap; gap: 6px; overflow: hidden; padding: 3px; margin: -3px; }
+  .subs a { flex: none; white-space: nowrap; font-size: 12.5px; color: var(--text); text-decoration: none; background: var(--chip); border-radius: 7px; padding: 4px 8px;
+    display: inline-flex; align-items: center; gap: 3px; transition: background-color .15s ease, color .15s ease; }
+  .subs-label { flex-basis: 100%; font-size: 11.5px; font-weight: 600; color: var(--faint); letter-spacing: .02em; margin-bottom: 2px; }
+  .subs a .si { flex: none; color: var(--faint); transition: color .15s ease; }
+  .subs a:hover .si, .subs a:focus-visible .si { color: var(--tone); }
+  .subs a:hover { background: var(--soft); color: var(--tone); }
+  .subs a:focus-visible { outline: 2px solid var(--tone); outline-offset: 1px; background: var(--soft); color: var(--tone); }
+
+  /* 빈 상태 */
+  .empty { text-align: center; padding: 48px 16px; border: 1px dashed var(--line-strong); border-radius: var(--radius); color: var(--muted); }
+  .empty strong { display: block; color: var(--text); font-size: 15px; margin-bottom: 4px; overflow-wrap: anywhere; }
+  .empty p { margin: 0 0 16px; font-size: 13.5px; }
+  .btn { font: inherit; font-size: 13.5px; font-weight: 600; border: 1px solid var(--line-strong); background: var(--card); color: var(--text);
+    border-radius: 9px; padding: 8px 14px; cursor: pointer; transition: border-color .15s ease, color .15s ease; }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--faint); font-size: 12.5px;
+    display: flex; flex-wrap: wrap; gap: 4px 16px; justify-content: space-between; }
+  footer kbd { font: inherit; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; }
+  @media (pointer: coarse) { footer .keys { display: none; } }
+
+  @media (max-width: 520px) {
+    .wrap { padding-top: 28px; }
+    header { margin-bottom: 28px; }
+    h1 { font-size: 22px; }
+    .mark { width: 40px; height: 40px; }
+    .search { flex-basis: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: 0s !important; }
+    .card:hover, .card:hover .go, .card:hover .go.ext { transform: none; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <h1>아이티스 마케팅 도구</h1>
-  <p class="sub">마케팅팀이 쓰는 대시보드 모음입니다.</p>
-  <ul>
-    <li><a class="svc" href="/ad-insight/"><span class="name">광고 인사이트</span><span class="path">/ad-insight</span><div class="desc">매체 광고비·견적·카테고리 효율·키워드·구매·이용 현황</div></a></li>
-    <li><a class="svc" href="/analytics/"><span class="name">사이트 분석</span><span class="path">/analytics</span><div class="desc">아이티켓 방문·유입·페이지·전환 (GA4)</div></a></li>
-  </ul>
-</main>
+<a class="skip" href="#groups">링크 목록으로 건너뛰기</a>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="mark" aria-hidden="true"><img src="favicon.png" alt="" width="44" height="44"></span>
+      <div>
+        <h1>아이티스 포털</h1>
+        <p class="lead">아이티스의 대시보드 · 홈페이지 · 사내 도구를 한곳에서 엽니다.</p>
+      </div>
+    </div>
+    <div class="search" id="search" role="search">
+      <label for="q" class="sr-only">링크 찾기</label>
+      <div class="field">
+      <svg class="lens" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" name="q" type="search" placeholder="이름 · 주소 · 설명으로 찾기…" autocomplete="off" spellcheck="false" enterkeyhint="go" aria-describedby="status">
+      <kbd aria-hidden="true">/</kbd>
+      <button type="button" class="clear" id="clear" aria-label="검색어 지우기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <p class="status" id="status" aria-live="polite"></p>
+    </div>
+  </header>
+
+  <main id="groups" tabindex="-1"></main>
+  <div class="empty" id="empty" hidden>
+    <strong id="empty-title">찾는 링크가 없습니다</strong>
+    <p>다른 말로 찾아보거나 검색어를 지워 전체 목록을 보세요.</p>
+    <button type="button" class="btn" id="reset">전체 목록 보기</button>
+  </div>
+
+  <footer>
+    <span translate="no">its.itket.com</span>
+    <span class="keys"><kbd>/</kbd> 찾기 · <kbd>Enter</kbd> 첫 결과 열기 · <kbd>Esc</kbd> 지우기</span>
+  </footer>
+</div>
+<noscript><p style="text-align:center">링크 목록을 보려면 자바스크립트를 켜 주세요.</p></noscript>
+<script src="links.js"></script>
+<script>
+  (function () {
+    var ICONS = {
+      chart: '<path d="M4 20V10M10 20V4M16 20v-7M2 20h20"/>',
+      store: '<path d="M3 9l1.6-5h14.8L21 9M4 9v11h16V9M3 9h18M9.5 20v-6h5v6"/>',
+      office: '<path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16M15 9h4a1 1 0 0 1 1 1v11M2 21h20M8 8h3M8 12h3M8 16h3"/>',
+      draft: '<path d="M4 20h4L19 9l-4-4L4 16v4zM13 7l4 4"/>',
+      link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>'
+    };
+    var svg = function (path, size, cls) {
+      return '<svg' + (cls ? ' class="' + cls + '"' : '') + ' width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + path + '</svg>';
+    };
+    var ARROW_EXT = svg('<path d="M7 17 17 7M8 7h9v9"/>', 16, 'go ext');
+    var ARROW_IN = svg('<path d="M5 12h14M13 6l6 6-6 6"/>', 16, 'go');
+    var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+    var isExt = function (u) { return /^https?:\/\//.test(u); };
+    var shown = function (u) { return isExt(u) ? u.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '') : 'its.itket.com' + u.replace(/\/$/, ''); };
+    var target = function (u) { return isExt(u) ? ' target="_blank" rel="noopener noreferrer"' : ''; };
+    var SUB_EXT = svg('<path d="M7 17 17 7M8 7h9v9"/>', 12, 'si');
+    var SUB_IN = svg('<path d="M5 12h14M13 6l6 6-6 6"/>', 12, 'si');
+    var SUB_MAX = 3; // 바로 가기는 최대 3개
+    var NEWTAB = '<span class="sr-only"> (새 탭에서 열림)</span>';
+
+    var groups = (window.PORTAL_LINKS || []).filter(function (g) { return g && g.items && g.items.length; });
+    var root = document.getElementById('groups');
+    var total = 0;
+
+    root.innerHTML = groups.map(function (g, gi) {
+      var tone = 't' + ((gi % 4) + 1);
+      var id = 'g' + gi;
+      total += g.items.length;
+      return '<section class="' + tone + '" aria-labelledby="' + id + '"><h2 id="' + id + '">' +
+        '<span class="gi">' + svg(ICONS[g.icon] || ICONS.link, 15) + '</span>' + esc(g.group) +
+        '<span class="count" data-total="' + g.items.length + '">' + g.items.length + '</span>' +
+        (g.note ? '<small>' + esc(g.note) + '</small>' : '') + '</h2><div class="grid">' +
+        g.items.map(function (it) {
+          var ext = isExt(it.url);
+          var hay = [it.name, it.desc, it.url, shown(it.url), it.tags, (it.sub || []).slice(0, SUB_MAX).map(function (s) { return s[0]; }).join(' ')].join(' ').toLowerCase();
+          var initial = String(it.name || '?').trim().charAt(0).toUpperCase();
+          return '<article class="card" data-hay="' + esc(hay) + '">' +
+            '<a class="main" href="' + esc(it.url) + '"' + target(it.url) + '>' +
+              '<span class="tile" aria-hidden="true">' + esc(initial) + '</span>' +
+              '<span class="body">' +
+                '<span class="top"><span class="name" title="' + esc(it.name) + '">' + esc(it.name) + '</span>' +
+                  (it.login ? '<span class="badge">로그인 필요</span>' : '') + (ext ? ARROW_EXT + NEWTAB : ARROW_IN) + '</span>' +
+                (it.desc ? '<span class="desc">' + esc(it.desc) + '</span>' : '') +
+                (it.desc === shown(it.url) ? '' : '<span class="url" translate="no">' + esc(shown(it.url)) + '</span>') +
+              '</span>' +
+            '</a>' +
+            (it.sub && it.sub.length ? '<nav class="subs" aria-label="' + esc(it.name) + ' 바로 가기"><span class="subs-label">자주 찾는 페이지</span><span class="subs-row">' + it.sub.slice(0, SUB_MAX).map(function (s) {
+              return '<a href="' + esc(s[1]) + '"' + target(s[1]) + '>' + esc(s[0]) + (isExt(s[1]) ? SUB_EXT + NEWTAB : SUB_IN) + '</a>';
+            }).join('') + '</span></nav>' : '') +
+          '</article>';
+        }).join('') + '</div></section>';
+    }).join('');
+
+    var q = document.getElementById('q');
+    var box = document.getElementById('search');
+    var status = document.getElementById('status');
+    var empty = document.getElementById('empty');
+    var emptyTitle = document.getElementById('empty-title');
+
+    function apply(syncUrl) {
+      var raw = q.value.trim();
+      var words = raw.toLowerCase().split(/\s+/).filter(Boolean);
+      var shownCount = 0;
+      box.classList.toggle('has-value', q.value.length > 0);
+      root.querySelectorAll('section').forEach(function (sec) {
+        var visible = 0;
+        sec.querySelectorAll('.card').forEach(function (c) {
+          var ok = words.every(function (w) { return c.dataset.hay.indexOf(w) >= 0; });
+          c.hidden = !ok;
+          if (ok) visible++;
+        });
+        sec.hidden = visible === 0;
+        var cnt = sec.querySelector('.count');
+        cnt.textContent = words.length ? visible + ' / ' + cnt.dataset.total : cnt.dataset.total;
+        shownCount += visible;
+      });
+      empty.hidden = shownCount > 0 || total === 0;
+      if (!shownCount && words.length) emptyTitle.textContent = '‘' + raw + '’에 맞는 링크가 없습니다';
+      status.textContent = words.length ? (shownCount ? shownCount + '개 찾음 · Enter 로 첫 결과 열기' : '결과 없음') : '';
+      if (syncUrl) {
+        var url = new URL(location.href);
+        if (raw) url.searchParams.set('q', raw); else url.searchParams.delete('q');
+        try { history.replaceState(null, '', url); } catch (e) {}
+      }
+      fitSubs();
+    }
+
+    // 바로 가기는 한 줄만: 넘치면 뒤쪽 칩부터 숨긴다 (첫 칩은 항상 보임)
+    function fitSubs() {
+      root.querySelectorAll('.subs-row').forEach(function (row) {
+        var chips = row.children;
+        for (var i = 0; i < chips.length; i++) chips[i].hidden = false;
+        if (!row.offsetParent) return;
+        for (var j = chips.length - 1; j > 0 && row.scrollWidth > row.clientWidth + 1; j--) chips[j].hidden = true;
+      });
+    }
+    var fitQueued = false;
+    window.addEventListener('resize', function () {
+      if (fitQueued) return;
+      fitQueued = true;
+      requestAnimationFrame(function () { fitQueued = false; fitSubs(); });
+    });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitSubs);
+
+    function clear(focus) { q.value = ''; apply(true); if (focus) q.focus(); }
+
+    var initial = new URLSearchParams(location.search).get('q');
+    if (initial) q.value = initial;
+    if (total === 0) { empty.hidden = false; emptyTitle.textContent = '등록된 링크가 없습니다'; document.getElementById('reset').hidden = true; }
+    apply(false);
+
+    q.addEventListener('input', function () { apply(true); });
+    q.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.isComposing) {
+        var first = root.querySelector('.card:not([hidden]) .main');
+        if (first && q.value.trim()) { e.preventDefault(); first.click(); }
+      }
+    });
+    document.getElementById('clear').addEventListener('click', function () { clear(true); });
+    document.getElementById('reset').addEventListener('click', function () { clear(true); });
+    document.addEventListener('keydown', function (e) {
+      var tag = (document.activeElement && document.activeElement.tagName) || '';
+      if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey && tag !== 'INPUT' && tag !== 'TEXTAREA') { e.preventDefault(); q.focus(); q.select(); }
+      if (e.key === 'Escape' && document.activeElement === q) { if (q.value) clear(false); else q.blur(); }
+    });
+  })();
+</script>
 </body>
 </html>
