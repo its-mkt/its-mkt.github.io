@@ -22,6 +22,7 @@
 | `links.js` | **링크 목록 — 링크 추가·수정은 이 파일만** 고친다 (묶음 `group` → 링크 `items`, 필드 설명은 파일 맨 위 주석) |
 | `index.html` | 화면(목록 그리기·검색). 링크를 여기에 직접 쓰지 않는다 |
 | `common.css` | 공용 스타일 — 색·간격·모서리 토큰, 기본 리셋, 공용 컴포넌트(`.btn`·`.pill`·`.ico`·`.kbd`). index·404 가 함께 쓴다 (404 는 `/common.css` 절대 경로) |
+| `icons/` | 카드 아이콘(각 사이트 파비콘·로고, 정사각형 PNG·SVG). `links.js` 의 `logo` 로 연결, 아이티켓은 `logo.png`(IT 마크), 그룹웨어는 그룹웨어 파비콘(/its2/include/common/favicon.ico)을 바꾼 `icons/groupware.png` |
 | `404.html` | 없는 주소 안내 → 포털로 |
 | `favicon.png` | 파비콘(512px, 흰 둥근 바탕 — 어두운 탭에서도 보이게). 원본은 회사 로고 PNG 의 여백만 잘라 줄인 것 |
 | `logo.png` · `logo-dark.png` | 머리 로고(`.mark`, 256px, 투명 배경) — 다크 모드는 IT 글자만 흰색인 `logo-dark.png` |
@@ -32,9 +33,10 @@
 
 - **공개 페이지다.** 관리자 화면 주소(고도몰 관리자, Supabase, Apps Script 편집기 등), 비밀번호, 내부 문서·시트 주소는 넣지 않는다
   - 예외: 그룹웨어처럼 회사 사람들이 함께 쓰는 로그인 화면은 넣어도 된다 (사용자 결정 2026-11-13 — 포털은 마케팅팀 전용이 아니라 회사 공용)
-  - 예외: 쇼핑몰 고도몰 관리자 로그인 — 아이티켓 `https://gdadmin.itket.com/` · 온코어 `https://gdadmin.on-core.co.kr/` 은 위험(공개 페이지에 관리자 주소 노출)을 알고 넣기로 함 (사용자 결정 2026-11-13, 고도몰(NHN커머스) 로그인과 용도가 달라 각각 둔다). `login: true`, 바로 가기 칩 없음. 그 밖의 관리자·관리자 안쪽 주소는 여전히 넣지 않는다. 그래서 index.html·404.html 의 `<meta name="robots" content="noindex, nofollow">` 는 빼지 않는다
+  - 예외: 쇼핑몰 고도몰 관리자 로그인 — 아이티켓 `https://gdadmin.itket.com/` · 온코어 `https://gdadmin.on-core.co.kr/` 은 위험(공개 페이지에 관리자 주소 노출)을 알고 넣기로 함 (사용자 결정 2026-11-13, 고도몰(NHN커머스) 로그인과 용도가 달라 따로 둔다). 쇼핑몰별 카드를 만들지 않고 `고도몰 관리자` 카드 하나(id `admin`, `login: true`)만 둔다 — 로그인해서 쓰므로 바로 가기 칩은 넣지 않는다. 그 밖의 관리자·관리자 안쪽 주소는 여전히 넣지 않는다. 그래서 index.html·404.html 의 `<meta name="robots" content="noindex, nofollow">` 는 빼지 않는다
 - 같은 포털 안 링크는 경로만(`/ad-insight/`), 바깥 사이트는 `https://` 전체 주소 — 바깥 링크는 화면에서 자동으로 새 탭
 - 외부 스크립트는 넣지 않는다 (폰트 CSS 하나만 jsdelivr). 빌드 도구를 들이기 전에 먼저 사용자와 상의한다
+- 보기 방식: 목록 위 오른쪽 `.seg` 버튼으로 카드형(기본)·리스트형 전환. 리스트형은 `#groups.list` 로 스타일을 나누고(바로 가기 칩 숨김), 고른 값은 localStorage `its-portal-view` 에 기억
 - 버튼·태그(`.btn`·`.pill`·`.kbd`·바로 가기 칩 등)의 높이는 `height` 로 정하고 위아래 `padding` 은 0, 좌우 padding 만 쓴다 (예: 칩 24px, 알약·키 20px, 버튼 40/48px)
 - 간격·크기는 짝수 단위만: 2/4/8/12/16/20/24/28/32/40/48/64px (`common.css` 의 `--s-*`·`--r-*` 토큰 사용). 글자 크기와 1px 테두리는 예외, 홀수 크기는 쓰지 않는다 (사용자 결정 2026-11-13)
 - 색은 `:root` 토큰으로, 다크 모드는 `prefers-color-scheme` 로 같이 맞춘다. 휴대폰 폭(약 360px)에서 가로 스크롤이 생기지 않게 한다

@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow"><!-- 사내 포털: 검색 노출 안 함, 링크(관리자 주소 등)도 따라가지 않게 -->
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0e1014" media="(prefers-color-scheme: dark)">
+<!-- theme-color = common.css 의 --card (라이트 #ffffff · 다크 #161a21) — 바꾸면 같이 고친다 -->
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#161a21" media="(prefers-color-scheme: dark)">
 <title>아이티스 포털</title>
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -14,186 +15,225 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="common.css">
 <style>
+  /* 화면 폭 기준: 520 휴대폰 · 640 2열 · 960 리스트형 주소 숨김 · 1240 4열 */
+  :root { --hd-h: 64px; --wrap-w: 1280px; --gutter-r: max(var(--s-16), env(safe-area-inset-right)); --gutter-l: max(var(--s-16), env(safe-area-inset-left)); }
+
+  /* ── 페이지 틀 ─────────────────────────────── */
+  html { scroll-padding-top: calc(var(--hd-h) + env(safe-area-inset-top) + var(--s-16)); } /* 고정 머리(노치 여백 포함)에 바로가기 위치·키보드 포커스가 가리지 않게 */
   @media (pointer: fine) { html { overscroll-behavior: none; } }
-  .skip { position: absolute; left: var(--s-16); top: -48px; z-index: 10; background: var(--accent); color: var(--accent-ink);
-    display: inline-flex; align-items: center; height: 40px; padding: 0 var(--s-16); border-radius: var(--r-8); text-decoration: none; font-size: 14px; font-weight: 600; }
-  .skip:focus-visible { top: var(--s-12); outline: var(--ring-w) solid var(--text); outline-offset: var(--s-2); }
+  .skip { --ring-color: var(--text); position: absolute; left: var(--s-16); top: -48px; z-index: 30;
+    display: inline-flex; align-items: center; height: 40px; padding: 0 var(--s-16); border-radius: var(--r-8);
+    background: var(--accent); color: var(--accent-ink); text-decoration: none; font-size: var(--fs-sm); font-weight: 600; }
+  .skip:focus-visible { top: var(--s-12); }
+  .wrap { max-width: var(--wrap-w); margin: 0 auto; padding: var(--s-32) var(--gutter-r) var(--s-16) var(--gutter-l); }
+  #groups:focus { outline: none; } /* 건너뛰기 링크로 온 포커스는 테두리 없이 */
 
-  .wrap { max-width: 1280px; margin: 0 auto;
-    padding: var(--s-16) max(var(--s-16), env(safe-area-inset-right)) var(--s-16) max(var(--s-16), env(safe-area-inset-left)); }
-
-  /* 머리 */
-  header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--s-20) var(--s-24); margin-bottom: var(--s-40); }
-  .brand { display: flex; align-items: center; gap: var(--s-16); min-width: 0; }
-  .mark { flex: none; width: 48px; height: 48px; }
+  /* ── 머리 .hd — 화면 위에 붙는 바 (카드 이름 줄 .top 과 다른 이름) ── */
+  .hd { position: sticky; top: 0; z-index: 20; padding-top: env(safe-area-inset-top); background: var(--card); border-bottom: 1px solid var(--line); }
+  .hd-in { max-width: var(--wrap-w); height: var(--hd-h); margin: 0 auto; padding: 0 var(--gutter-r) 0 var(--gutter-l);
+    display: flex; align-items: center; justify-content: space-between; gap: var(--s-16); }
+  .brand { --ring-o: var(--s-4); display: flex; align-items: center; gap: var(--s-12); min-width: 0; border-radius: var(--r-8); color: inherit; text-decoration: none; }
+  .mark { flex: none; width: 32px; height: 32px; }
   .mark img { display: block; width: 100%; height: 100%; }
-  h1 { font-size: 24px; line-height: 1.25; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
-  .lead { margin: var(--s-2) 0 0; color: var(--muted); font-size: 14px; text-wrap: pretty; }
+  h1 { margin: 0; font-size: var(--fs-lg); line-height: 1.25; letter-spacing: -0.02em; white-space: nowrap; }
 
-  /* 검색 */
+  /* ── 검색 — 칸 안에 돋보기 · '/' 안내 · 결과 수 · 지우기 버튼이 겹쳐 놓인다 ── */
   .search { position: relative; flex: 0 1 320px; min-width: 0; }
   .field { position: relative; }
-  .field > .lens, .field > .kbd, .field > .clear { position: absolute; top: 50%; transform: translateY(-50%); }
-  .lens { left: var(--s-12); color: var(--faint); pointer-events: none; }
-  .search input { width: 100%; height: 48px; padding: 0 var(--s-48) 0 var(--s-40); border: 1px solid var(--line); border-radius: var(--r-12);
-    background: var(--card); color: var(--text); font: inherit; font-size: var(--fs-md); box-shadow: var(--shadow);
-    transition: border-color var(--dur) ease, box-shadow var(--dur) ease; -webkit-appearance: none; appearance: none; }
+  .field > .lens, .field > .kbd, .field > .status, .field > .clear { position: absolute; top: 50%; transform: translateY(-50%); }
+  .lens { left: var(--s-12); display: flex; color: var(--faint); pointer-events: none; }
+  .search input { width: 100%; height: 40px; padding: 0 var(--s-48) 0 var(--s-40); border: 1px solid var(--line); border-radius: var(--r-8);
+    background: var(--bg); color: var(--text); font: inherit; font-size: var(--fs-md); -webkit-appearance: none; appearance: none;
+    transition: border-color var(--dur) ease, box-shadow var(--dur) ease; }
   .search input::placeholder { color: var(--faint); }
   .search input::-webkit-search-cancel-button { display: none; }
   .search input:hover { border-color: var(--line-strong); }
-  .search input:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 var(--s-4) var(--accent-soft), var(--shadow); }
+  .search input:focus-visible { outline: none; border-color: var(--accent); background: var(--card); box-shadow: 0 0 0 var(--s-4) var(--accent-soft); }
   .field > .kbd { right: var(--s-12); height: 24px; }
-  .clear { right: var(--s-8); width: 32px; height: 32px; padding: 0; display: none; place-items: center; border: 0; border-radius: var(--r-8);
-    background: transparent; color: var(--muted); cursor: pointer; }
+  /* 결과 수: 지우기 버튼 왼쪽에 짧게("3개") — 화면 읽기에는 전체 안내 */
+  .field > .status { right: var(--s-40); font-size: var(--fs-xs); font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; pointer-events: none; }
+  .clear { --ring-o: 0; right: var(--s-4); width: 32px; height: 32px; padding: 0; display: none; place-items: center;
+    border: 0; border-radius: var(--r-8); background: transparent; color: var(--muted); cursor: pointer; }
   .clear:hover { background: var(--chip); color: var(--text); }
-  .clear:focus-visible { outline: var(--ring-w) solid var(--ring-color); outline-offset: 0; }
+  .search.has-value input { padding-right: calc(var(--s-48) + var(--s-40)); } /* 결과 수("12개") + 지우기 버튼 자리 */
   .search.has-value .kbd { display: none; }
   .search.has-value .clear { display: grid; }
   @media (pointer: coarse) { .field > .kbd { display: none; } }
-  /* 검색 결과 안내: 자리를 차지하지 않고 검색칸 바로 아래에 뜬다 (머리 아래 여백 안에 들어감) */
-  .status { position: absolute; top: calc(100% + var(--s-8)); left: var(--s-2); right: var(--s-2); margin: 0; height: 20px; line-height: 20px;
-    overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: var(--fs-xs); color: var(--muted); font-variant-numeric: tabular-nums; }
 
-  /* 묶음 */
-  .sec { margin-top: var(--s-40); scroll-margin-top: var(--s-16); }
+  /* ── 보기 방식 전환 (카드형 · 리스트형) — 목록 위 오른쪽, 아이콘만 ── */
+  .viewbar { display: flex; justify-content: flex-end; margin-bottom: var(--s-16); }
+  .seg { display: inline-flex; gap: var(--s-2); padding: var(--s-2); border: 1px solid var(--line); border-radius: var(--r-8); background: var(--card); }
+  .seg button { --ring-o: 0; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0;
+    border: 0; border-radius: var(--r-4); background: transparent; color: var(--muted); cursor: pointer;
+    transition: background-color var(--dur) ease, color var(--dur) ease; }
+  .seg button:hover { color: var(--text); }
+  .seg button[aria-pressed="true"] { background: var(--chip); color: var(--text); }
+
+  /* ── 묶음 · 카드 격자 ─────────────────────── */
+  .sec { margin-top: var(--s-40); }
   .sec:first-of-type { margin-top: 0; }
-  .sec h2 { font-size: var(--fs-md); font-weight: 700; margin: 0 0 var(--s-16); display: flex; align-items: center; gap: var(--s-8); flex-wrap: wrap; text-wrap: balance; }
-  .sec h2 .count { font-size: 12px; background: var(--card); color: var(--muted); box-shadow: inset 0 0 0 1px var(--line-strong); } /* 바탕(--bg)과 구분: 카드 색 + 테두리 */
-  .sec h2 small { font-weight: 400; color: var(--faint); font-size: 12px; }
+  .sec h2 { display: flex; align-items: center; flex-wrap: wrap; gap: var(--s-8); margin: 0 0 var(--s-16); font-size: var(--fs-md); font-weight: 700; text-wrap: balance; }
+  .sec h2 .count { font-size: var(--fs-xs); background: var(--card); color: var(--muted); box-shadow: inset 0 0 0 1px var(--line-strong); } /* 바탕과 구분: 카드 색 + 테두리 */
+  .sec h2 small { font-size: var(--fs-xs); font-weight: 400; color: var(--faint); }
   .t1 { --tone: var(--tone-1); --soft: var(--tone-1-soft); }
   .t2 { --tone: var(--tone-2); --soft: var(--tone-2-soft); }
   .t3 { --tone: var(--tone-3); --soft: var(--tone-3-soft); }
   .t4 { --tone: var(--tone-4); --soft: var(--tone-4-soft); }
-
-  /* 카드 격자 — 짝수 열: 휴대폰 1 → 태블릿 2 → 데스크톱 4 (4열은 바로 가기 3개가 한 줄에 들어가는 1240px부터) */
+  /* 짝수 열: 휴대폰 1 → 태블릿 2 → 데스크톱 4 (4열은 바로 가기 3개가 한 줄에 들어가는 1240px부터) */
   .grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-16); }
   @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (min-width: 1240px) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
-  /* 카드 */
-  .card { --ring-color: var(--tone); position: relative; display: flex; flex-direction: column; min-width: 0; background: var(--card);
-    border: 1px solid var(--line); border-radius: var(--r-16); padding: var(--s-16);
+  /* ── 카드 ─────────────────────────────────── */
+  .card { --ring-color: var(--tone); position: relative; display: flex; flex-direction: column; min-width: 0; padding: var(--s-16);
+    border: 1px solid var(--line); border-radius: var(--r-16); background: var(--card);
     transition: border-color var(--dur) ease, box-shadow var(--dur) ease, transform var(--dur) ease; }
   .card:hover { border-color: var(--tone); box-shadow: var(--shadow); transform: translateY(calc(var(--s-2) * -1)); }
   .card:active { transform: translateY(0); }
   .card:has(.main:focus-visible) { outline: var(--ring-w) solid var(--ring-color); outline-offset: var(--s-2); border-color: var(--tone); }
-  .card .main { color: inherit; text-decoration: none; display: flex; gap: var(--s-16); align-items: flex-start; min-width: 0; flex: 1; }
-  .card .main::after { content: ''; position: absolute; inset: 0; border-radius: var(--r-16); }
-  .card .main:focus-visible { outline: none; }
-  .body { min-width: 0; flex: 1; display: flex; flex-direction: column; }
+  .card .main { flex: 1; display: flex; align-items: flex-start; gap: var(--s-16); min-width: 0; color: inherit; text-decoration: none; }
+  .card .main::after { content: ''; position: absolute; inset: 0; border-radius: var(--r-16); } /* 카드 전체를 누를 수 있게 */
+  .card .main:focus-visible { outline: none; } /* 테두리는 카드(:has)에 그린다 */
+  .body { flex: 1; display: flex; flex-direction: column; min-width: 0; }
   .top { display: flex; align-items: center; gap: var(--s-8); min-width: 0; }
-  .name { font-weight: 700; font-size: var(--fs-lg); letter-spacing: -0.01em; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--fs-lg); font-weight: 700; letter-spacing: -0.01em; }
   .go { flex: none; margin-left: auto; color: var(--faint); transition: color var(--dur) ease, transform var(--dur) ease; }
   .card:hover .go { color: var(--tone); transform: translateX(var(--s-2)); }
   .card:hover .go.ext { transform: translate(var(--s-2), calc(var(--s-2) * -1)); }
-  /* 설명은 1줄로 통일 — 넘치면 … 로 자르고 마우스를 올리면 전체가 보인다 */
-  .desc { color: var(--muted); font-size: var(--fs-sm); margin-top: var(--s-4); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .url { color: var(--faint); font-size: var(--fs-xs); margin-top: var(--s-12); overflow-wrap: anywhere; }
-
-  /* 준비 중 카드 */
+  .desc { min-width: 0; margin-top: var(--s-4); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: var(--fs-sm); } /* 1줄 통일 */
+  .url { margin-top: var(--s-12); overflow-wrap: anywhere; color: var(--faint); font-size: var(--fs-xs); }
+  /* 준비 중 */
   .card.soon { background: transparent; border-style: dashed; border-color: var(--line-strong); cursor: default; }
   .card.soon:hover { transform: none; box-shadow: none; border-color: var(--line-strong); }
   .card.soon .ico { background: var(--chip); color: var(--faint); }
+  /* 사이트 로고 타일(.logo): 로고가 흰 바탕용이라 다크 모드에서도 흰 바탕 + 옅은 테두리 */
+  .ico.logo { background: #fff; box-shadow: inset 0 0 0 1px rgba(16, 24, 40, .08); }
+  .ico.logo img { display: block; width: 24px; height: 24px; object-fit: contain; }
+  .card.soon .ico.logo { background: #fff; }
+  .card.soon .ico.logo img { filter: grayscale(1); opacity: .56; }
   .card.soon .name { color: var(--muted); }
   .card.soon .desc { color: var(--faint); }
 
-  /* 바로 가기 — 평소엔 카드 폭에 들어가는 만큼 한 줄. 카드에 마우스를 올리거나(키보드 포커스 포함) 휴대폰에서 '더보기'를 누르면
-     카드 높이는 그대로 둔 채 판이 부드럽게 위로 올라오고, 가려져 있던 칩이 차례로 떠오른다 (최대 6개)
-     높이 값(--subs-c 접힘 · --subs-o 펼침)은 fitSubs() 가 칩 크기를 재서 넣는다 */
-  .subs { position: relative; z-index: 1; margin-top: var(--s-16); height: var(--subs-h, auto); }
-  /* 칩·더보기 버튼 말고 판의 빈 곳(제목 줄·칩 사이)을 누르면 아래 카드 링크(메인)로 간다 */
-  .subs { pointer-events: none; }
+  /* ── 바로 가기 ─────────────────────────────
+     평소엔 카드 폭에 들어가는 만큼 한 줄. '더보기'를 누르면(PC·휴대폰·키보드 같음)
+     카드 높이는 그대로 둔 채 판이 위로 올라오고 가려진 칩이 차례로 떠오른다 (최대 2줄 · 6개).
+     높이(--subs-c 접힘 · --subs-o 펼침 · --subs-h 자리)는 fitSubs() 가 재서 넣는다 */
+  .subs { position: relative; z-index: 1; margin-top: var(--s-16); height: var(--subs-h, auto);
+    pointer-events: none; } /* 칩·더보기 말고 판의 빈 곳을 누르면 아래 카드 링크로 */
   .subs a, .subs-more { pointer-events: auto; }
   .subs-in { position: absolute; left: calc(var(--s-4) * -1); right: calc(var(--s-4) * -1); bottom: calc(var(--s-4) * -1);
-    display: flex; flex-wrap: wrap; align-content: flex-start; gap: var(--s-12); padding: var(--s-16) var(--s-4) var(--s-4); border-top: 1px dashed var(--line);
-    background: var(--card); min-height: var(--subs-c, 0); max-height: var(--subs-c, none); overflow: hidden; /* 접힌 높이를 모든 카드가 같게 */
-    transition: max-height .24s cubic-bezier(.4, 0, .2, 1), box-shadow .24s ease; }  /* 접힐 때 */
+    display: flex; flex-wrap: wrap; align-content: flex-start; gap: var(--s-12); padding: var(--s-16) var(--s-4) var(--s-4);
+    border-top: 1px dashed var(--line); background: var(--card); overflow: hidden;
+    min-height: var(--subs-c, 0); max-height: var(--subs-c, none); /* 접힌 높이를 모든 카드가 같게 */
+    transition: max-height .24s cubic-bezier(.4, 0, .2, 1), box-shadow .24s ease; }
   .subs-head { flex-basis: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--s-8);
-    height: 20px; max-height: var(--s-24); /* 더보기 버튼 유무와 상관없이 제목 줄 높이 고정 */ transition: max-height .24s ease, opacity .16s ease, margin .24s ease; }
-  /* 펼칠 자리가 모자란 카드(.tight): 마우스·키보드로 펼칠 때 제목 줄을 접어 아이콘·이름을 가리지 않게 */
-  #groups:not(.measure) .card.sub:focus-within:not(.open) .subs.tight .subs-head { max-height: 0; opacity: 0; margin-bottom: calc(var(--s-8) * -1); }
-  @media (hover: hover) {
-    #groups:not(.measure) .card.sub:hover:not(.open) .subs.tight .subs-head { max-height: 0; opacity: 0; margin-bottom: calc(var(--s-8) * -1); }
-  }
-  .subs-label { font-size: 12px; font-weight: 600; color: var(--faint); letter-spacing: .02em; }
-  .subs-more { display: inline-flex; align-items: center; height: 20px; font: inherit; font-size: 12px; font-weight: 600; line-height: 1; color: var(--faint); background: none; border: 0; padding: 0 var(--s-2); border-radius: var(--r-8); cursor: pointer;
-    transition: color var(--dur) ease, opacity .16s ease, visibility .16s; }
+    height: 20px; /* 더보기 버튼 유무와 상관없이 높이 고정 */ }
+  .subs-label { font-size: var(--fs-xs); font-weight: 600; letter-spacing: .02em; color: var(--faint); }
+  .subs-more { flex: none; display: inline-flex; align-items: center; height: 20px; white-space: nowrap; padding: 0 var(--s-2); border: 0; border-radius: var(--r-8); background: none;
+    font: inherit; font-size: var(--fs-xs); font-weight: 600; line-height: 1; color: var(--faint); cursor: pointer;
+    transition: color var(--dur) ease; }
   .subs-more:hover { color: var(--tone); }
-  .subs-more:focus-visible { outline: var(--ring-w) solid var(--ring-color); outline-offset: var(--s-2); }
   .subs-more .t-close, .card.open .subs-more .t-open { display: none; }
   .card.open .subs-more .t-close { display: inline; }
-  .subs-row a.over { display: none; } /* 펼쳐도 2줄까지 — 3번째 줄로 넘치는 칩은 숨김 */
-  .subs-row a.x { opacity: 0; transform: translateY(6px);
-    transition: opacity .14s ease, transform .14s ease, background-color var(--dur) ease, color var(--dur) ease; }
-  /* 펼침: 휴대폰 '더보기'(.open) · 키보드 포커스 · 마우스 올림 (#groups.measure 는 크기를 잴 때 잠깐 끈다) */
-  #groups:not(.measure) .card.sub.open .subs-in, #groups:not(.measure) .card.sub:focus-within .subs-in {
+  .subs-more .chev { margin-left: var(--s-2); transition: transform .24s cubic-bezier(.22, 1, .36, 1); } /* 누를 수 있다는 표시 — 펼치면 위로 뒤집힘 */
+  .card.open .subs-more .chev { transform: rotate(180deg); }
+  .subs-more:hover .chev { transform: translateY(1px); }
+  .card.open .subs-more:hover .chev { transform: rotate(180deg) translateY(1px); }
+  /* 줄 오른쪽 끝에 화살표 한 개 자리(--sa-room)를 비워 둔다 — 호버로 칩이 넓어져도 줄이 바뀌지 않게 */
+  .subs-row { --sa-room: calc(12px + var(--s-4)); flex-basis: 100%; min-width: 0; display: flex; flex-wrap: wrap; gap: var(--s-8);
+    padding: var(--s-4) calc(var(--s-4) + var(--sa-room)) var(--s-4) var(--s-4); margin: calc(var(--s-4) * -1); }
+  .subs a { flex: none; display: inline-flex; align-items: center; height: 24px; padding: 0 var(--s-8); border-radius: var(--r-4);
+    background: var(--chip); color: var(--text); font-size: var(--fs-xs); line-height: 1; white-space: nowrap; text-decoration: none;
+    transition: background-color var(--dur) ease, color var(--dur) ease; }
+  .subs a:hover, .subs a:focus-visible { background: var(--soft); color: var(--tone); }
+  /* 호버·포커스 때 화살표: 글자 옆에 붙어 나오며 칩이 오른쪽으로 그만큼(4 + 12px) 넓어진다 */
+  .subs a .sa { flex: none; width: 0; margin-left: 0; opacity: 0;
+    transition: width var(--dur) ease, margin-left var(--dur) ease, opacity var(--dur) ease; }
+  .subs a:hover .sa, .subs a:focus-visible .sa { width: 12px; margin-left: var(--s-4); opacity: 1; }
+  .subs-row a.over { display: none; } /* 셋째 줄로 넘치는 칩 */
+  .subs-row a.x { opacity: 0; visibility: hidden; transform: translateY(6px); /* 둘째 줄 칩: 펼칠 때 떠오름 · 접혀 있으면 Tab 도 안 감 */
+    transition: opacity .14s ease, transform .14s ease, visibility 0s linear .14s, background-color var(--dur) ease, color var(--dur) ease; }
+  /* 펼침 — '더보기'(.open) (#groups.measure 는 크기를 잴 때 잠깐 끈다) */
+  #groups:not(.measure) .card.sub.open .subs-in {
     max-height: var(--subs-o, 320px); box-shadow: 0 calc(var(--s-12) * -1) var(--s-12) calc(var(--s-4) * -1) var(--card);
     transition: max-height .36s cubic-bezier(.22, 1, .36, 1), box-shadow .36s ease; }
-  #groups:not(.measure) .card.sub:focus-within:not(.open) .subs-in { max-height: var(--subs-t, var(--subs-o, 320px)); }
-  #groups:not(.measure) .card.sub.open .subs-row a.x, #groups:not(.measure) .card.sub:focus-within .subs-row a.x { opacity: 1; transform: none;
+  #groups:not(.measure) .card.sub.open .subs-row a.x { opacity: 1; visibility: visible; transform: none;
     transition: opacity .26s ease calc(var(--k, 0) * 45ms + 90ms), transform .32s cubic-bezier(.22, 1, .36, 1) calc(var(--k, 0) * 45ms + 90ms),
-      background-color var(--dur) ease, color var(--dur) ease; }
-  #groups:not(.measure) .card.sub:focus-within:not(.open) .subs-more { opacity: 0; visibility: hidden; }
-  @media (hover: hover) {
-    /* 마우스는 살짝 머문 뒤(70ms) 펼친다 — 지나가기만 할 때 깜빡이지 않게 */
-    #groups:not(.measure) .card.sub:hover .subs-in {
-      max-height: var(--subs-o, 320px); box-shadow: 0 calc(var(--s-12) * -1) var(--s-12) calc(var(--s-4) * -1) var(--card);
-      transition: max-height .36s cubic-bezier(.22, 1, .36, 1) 70ms, box-shadow .36s ease 70ms; }
-    #groups:not(.measure) .card.sub:hover:not(.open) .subs-in { max-height: var(--subs-t, var(--subs-o, 320px)); }
-    #groups:not(.measure) .card.sub:hover .subs-row a.x { opacity: 1; transform: none;
-      transition: opacity .26s ease calc(var(--k, 0) * 45ms + 160ms), transform .32s cubic-bezier(.22, 1, .36, 1) calc(var(--k, 0) * 45ms + 160ms),
-        background-color var(--dur) ease, color var(--dur) ease; }
-    #groups:not(.measure) .card.sub:hover:not(.open) .subs-more { opacity: 0; visibility: hidden; }
-  }
+      visibility 0s, background-color var(--dur) ease, color var(--dur) ease; }
   #groups.measure .subs-in, #groups.measure .subs-row a.x { transition: none; }
-  .subs-row { flex-basis: 100%; min-width: 0; display: flex; flex-wrap: wrap; gap: var(--s-8); padding: var(--s-4); margin: calc(var(--s-4) * -1); }
-  .subs a { flex: none; white-space: nowrap; font-size: var(--fs-xs); color: var(--text); text-decoration: none; background: var(--chip); border-radius: var(--r-4);
-    height: 24px; padding: 0 var(--s-8); line-height: 1; display: inline-flex; align-items: center; gap: var(--s-4); transition: background-color var(--dur) ease, color var(--dur) ease; }
-  .subs a:hover, .subs a:focus-visible { background: var(--soft); color: var(--tone); }
-  .subs a:focus-visible { outline: var(--ring-w) solid var(--ring-color); outline-offset: var(--s-2); }
 
-  /* 빈 상태 */
-  .empty { text-align: center; padding: var(--s-48) var(--s-16); border: 1px dashed var(--line-strong); border-radius: var(--r-16); color: var(--muted); }
-  .empty strong { display: block; color: var(--text); font-size: var(--fs-md); margin-bottom: var(--s-4); overflow-wrap: anywhere; }
+  /* ── 리스트형 (#groups.list) — 묶음마다 한 판에 줄로 이어 붙인다, 바로 가기는 숨김 ── */
+  #groups.list .grid { grid-template-columns: minmax(0, 1fr); gap: 0; overflow: hidden; border: 1px solid var(--line); border-radius: var(--r-16); background: var(--card); }
+  #groups.list .card { flex-direction: row; align-items: center; padding: var(--s-12) var(--s-16); border: 0; border-radius: 0; background: transparent; }
+  #groups.list .card:not([hidden]) ~ .card { border-top: 1px solid var(--line); } /* 보이는 첫 줄 뒤부터 (검색으로 숨은 카드는 안 셈) */
+  #groups.list .card:hover { transform: none; box-shadow: none; background: var(--bg); }
+  #groups.list .card:has(.main:focus-visible) { outline-offset: calc(var(--ring-w) * -1); }
+  #groups.list .card .main { align-items: center; gap: var(--s-12); }
+  #groups.list .card .main::after { border-radius: 0; }
+  #groups.list .ico.lg { width: 32px; height: 32px; font-size: var(--fs-sm); }
+  #groups.list .ico.logo img { width: 20px; height: 20px; }
+  #groups.list .body { flex-direction: row; align-items: center; gap: var(--s-16); padding-right: var(--s-24); }
+  #groups.list .top { flex: 0 0 240px; }
+  #groups.list .desc { flex: 1 1 auto; margin: 0; }
+  #groups.list .url { flex: none; max-width: 240px; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #groups.list .go { position: absolute; right: var(--s-16); top: 50%; margin-top: -8px; }
+  #groups.list .subs { display: none; }
+  #groups.list .card.soon { opacity: .72; }
+  #groups.list .card.soon:hover { background: transparent; }
+  @media (max-width: 960px) { #groups.list .url { display: none; } }
+  @media (max-width: 640px) {
+    #groups.list .body { flex-direction: column; align-items: flex-start; gap: var(--s-2); }
+    #groups.list .top { flex: none; max-width: 100%; }
+    #groups.list .desc { max-width: 100%; }
+  }
+
+  /* ── 빈 상태 · 아래쪽 ──────────────────────── */
+  .empty { padding: var(--s-48) var(--s-16); border: 1px dashed var(--line-strong); border-radius: var(--r-16); text-align: center; color: var(--muted); }
+  .empty strong { display: block; margin-bottom: var(--s-4); overflow-wrap: anywhere; color: var(--text); font-size: var(--fs-md); }
   .empty p { margin: 0 0 var(--s-16); font-size: var(--fs-sm); }
-
-  footer { margin-top: var(--s-64); padding-top: var(--s-20); border-top: 1px solid var(--line); color: var(--faint); font-size: var(--fs-xs);
-    display: flex; flex-wrap: wrap; gap: var(--s-4) var(--s-16); justify-content: space-between; }
+  footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--s-4) var(--s-16);
+    margin-top: var(--s-64); padding-top: var(--s-20); border-top: 1px solid var(--line); color: var(--faint); font-size: var(--fs-xs); }
   @media (pointer: coarse) { footer .keys { display: none; } }
 
+  /* ── 휴대폰: 로고 + 검색칸 한 줄 (제목은 화면 읽기용으로만) ── */
   @media (max-width: 520px) {
-    h1 { font-size: 22px; }
-    .mark { width: 40px; height: 40px; }
-    .search { flex-basis: 100%; }
+    .hd-in { gap: var(--s-12); }
+    .brand h1 { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; } /* = .sr-only */
+    .search { flex: 1 1 auto; }
   }
   @media (prefers-reduced-motion: reduce) {
     .card:hover, .card:hover .go, .card:hover .go.ext { transform: none; }
-    .subs-in, .subs-row a.x, .subs-more { transition: none !important; }
+    .subs-in, .subs-row a.x { transition: none !important; }
   }
 </style>
 </head>
 <body>
 <a class="skip" href="#groups">링크 목록으로 건너뛰기</a>
-<div class="wrap">
-  <header>
-    <div class="brand">
-      <span class="mark" aria-hidden="true"><img src="logo.png" alt="" width="48" height="48"></span>
-      <div>
-        <h1>아이티스 포털</h1>
-        <p class="lead">아이티스의 대시보드 · 홈페이지 · 업무 도구를 한곳에서 엽니다.</p>
-      </div>
-    </div>
+<header class="hd">
+  <div class="hd-in">
+    <a class="brand" href="./" aria-label="아이티스 포털 첫 화면">
+      <span class="mark" aria-hidden="true"><picture><source srcset="logo-dark.png" media="(prefers-color-scheme: dark)"><img src="logo.png" alt="" width="32" height="32"></picture></span>
+      <h1>아이티스 포털</h1>
+    </a>
     <div class="search" id="search" role="search">
       <label for="q" class="sr-only">링크 찾기</label>
       <div class="field">
-        <svg class="lens" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <span class="lens" data-icon="search"></span>
         <input id="q" name="q" type="search" placeholder="이름 · 주소 · 설명으로 찾기…" autocomplete="off" spellcheck="false" enterkeyhint="go" aria-describedby="status">
         <kbd class="kbd" aria-hidden="true">/</kbd>
-        <button type="button" class="clear" id="clear" aria-label="검색어 지우기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+        <span class="status" id="status" aria-live="polite"></span>
+        <button type="button" class="clear" id="clear" aria-label="검색어 지우기" data-icon="close"></button>
       </div>
-      <p class="status" id="status" aria-live="polite"></p>
     </div>
-  </header>
+  </div>
+</header>
+<div class="wrap">
+  <div class="viewbar" id="viewbar">
+    <div class="seg" role="group" aria-label="보기 방식">
+      <button type="button" data-view="card" aria-pressed="true" title="카드형"><span data-icon="grid"></span><span class="sr-only">카드형</span></button>
+      <button type="button" data-view="list" aria-pressed="false" title="리스트형"><span data-icon="list"></span><span class="sr-only">리스트형</span></button>
+    </div>
+  </div>
 
   <main id="groups" tabindex="-1"></main>
   <div class="empty" id="empty" hidden>
@@ -210,227 +250,265 @@
 <noscript><p style="text-align:center">링크 목록을 보려면 자바스크립트를 켜 주세요.</p></noscript>
 <script src="links.js"></script>
 <script>
-  (function () {
-    /* ── 작은 도구 ─────────────────────────────── */
-    var ICONS = {
-      chart: '<path d="M4 20V10M10 20V4M16 20v-7M2 20h20"/>',
-      store: '<path d="M3 9l1.6-5h14.8L21 9M4 9v11h16V9M3 9h18M9.5 20v-6h5v6"/>',
-      office: '<path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16M15 9h4a1 1 0 0 1 1 1v11M2 21h20M8 8h3M8 12h3M8 16h3"/>',
-      draft: '<path d="M4 20h4L19 9l-4-4L4 16v4zM13 7l4 4"/>',
-      link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
-      out: '<path d="M7 17 17 7M8 7h9v9"/>',      // 바깥 사이트 (새 탭)
-      in: '<path d="M5 12h14M13 6l6 6-6 6"/>'     // 포털 안
-    };
-    var SUB_MAX = 6;  // 펼쳤을 때 최대 수
-    var NEWTAB = '<span class="sr-only"> (새 탭에서 열림)</span>';
+(() => {
+  'use strict';
 
-    function svg(name, size, cls) {
-      return '<svg' + (cls ? ' class="' + cls + '"' : '') + ' width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || ICONS.link) + '</svg>';
-    }
-    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
-    function slug(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''); }
-    function isExt(u) { return /^https?:\/\//.test(u); }
-    // 화면에 보이는 주소: https:// · www · ? 뒤(로그인 넘김 값 등) · 끝 / 는 뺀다
-    function shown(u) { u = String(u).split(/[?#]/)[0]; return isExt(u) ? u.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '') : 'its.itket.com' + u.replace(/\/$/, ''); }
+  /* ── 설정 ─────────────────────────────────── */
+  const SUB_MAX = 6;                   // 바로 가기 최대 수 (펼쳤을 때 2줄까지)
+  const VIEW_KEY = 'its-portal-view';  // 보기 방식 저장 키 (localStorage)
+  const NEWTAB = '<span class="sr-only"> (새 탭에서 열림)</span>';
+  const ICONS = {
+    chart:  '<path d="M4 20V10M10 20V4M16 20v-7M2 20h20"/>',
+    store:  '<path d="M3 9l1.6-5h14.8L21 9M4 9v11h16V9M3 9h18M9.5 20v-6h5v6"/>',
+    office: '<path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16M15 9h4a1 1 0 0 1 1 1v11M2 21h20M8 8h3M8 12h3M8 16h3"/>',
+    draft:  '<path d="M4 20h4L19 9l-4-4L4 16v4zM13 7l4 4"/>',
+    link:   '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+    out:    '<path d="M7 17 17 7M8 7h9v9"/>',     // 바깥 사이트 (새 탭)
+    in:     '<path d="M5 12h14M13 6l6 6-6 6"/>',  // 포털 안
+    search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+    close:  '<path d="M6 6l12 12M18 6 6 18"/>',
+    grid:   '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+    list:   '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+    chev:   '<path d="m6 9 6 6 6-6"/>'  // 갈매기(더보기 ⌄ · 접기 ⌃)
+  };
 
-    /* ── 컴포넌트 ─────────────────────────────── */
-    // 링크: 바깥 주소면 새 탭 + 화면 읽기 안내를 자동으로 붙인다
-    function link(url, inner, cls, after) {
-      var ext = isExt(url);
-      return '<a' + (cls ? ' class="' + cls + '"' : '') + ' href="' + esc(url) + '"' + (ext ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' +
-        inner + (after ? after(ext) : '') + (ext ? NEWTAB : '') + '</a>';
-    }
+  /* ── 작은 도구 ─────────────────────────────── */
+  const $ = (sel, el = document) => el.querySelector(sel);
+  const $$ = (sel, el = document) => el.querySelectorAll(sel);
+  const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ESC[c]);
+  const slug = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
+  const isExt = (u) => /^https?:\/\//.test(u);
+  // 화면에 보이는 주소: https:// · www · ? 뒤(로그인 넘김 값 등) · 끝 / 는 뺀다
+  const shown = (u) => {
+    u = String(u).split(/[?#]/)[0];
+    return isExt(u) ? u.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '') : 'its.itket.com' + u.replace(/\/$/, '');
+  };
+  const svg = (name, size = 16, cls = '') =>
+    `<svg${cls ? ` class="${cls}"` : ''} width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ICONS.link}</svg>`;
 
-    // 표시: 준비 중 · 로그인 필요
-    function badge(it, soon) {
-      if (soon) return '<span class="pill badge soon">준비 중</span>';
-      return it.login ? '<span class="pill badge warn">로그인 필요</span>' : '';
-    }
+  /* ── 템플릿 ───────────────────────────────── */
+  // 링크: 바깥 주소면 새 탭 + 화면 읽기 안내를 자동으로 붙인다
+  const link = (url, inner, cls = '') => {
+    const ext = isExt(url);
+    return `<a${cls ? ` class="${cls}"` : ''} href="${esc(url)}"${ext ? ' target="_blank" rel="noopener noreferrer"' : ''}>${inner}${ext ? NEWTAB : ''}</a>`;
+  };
 
-    // 바로 가기 칩 줄
-    function subsNav(it, subs) {
-      if (!subs.length) return '';
-      return '<nav class="subs" aria-label="' + esc(it.name) + ' 바로 가기"><div class="subs-in">' +
-        '<span class="subs-head"><span class="subs-label">자주 찾는 페이지</span>' +
-          '<button type="button" class="subs-more" aria-expanded="false" hidden><span class="t-open">더보기 <span class="n"></span></span><span class="t-close">접기</span></button></span>' +
-        '<span class="subs-row">' +
-        subs.map(function (s, i) {
-          return link(s[1], esc(s[0]), ''); // 화살표 없이 — 바깥/포털 안 구분은 카드 오른쪽 위 화살표가 맡는다
-        }).join('') + '</span></div></nav>';
-    }
+  // 표시: 준비 중 · 로그인 필요
+  const badge = (it, soon) =>
+    soon ? '<span class="pill badge soon">준비 중</span>'
+      : it.login ? '<span class="pill badge warn">로그인 필요</span>' : '';
 
-    // 카드
-    function card(it) {
-      var soon = !!it.soon || !it.url; // 제작 중: 누를 수 없는 카드
-      var url = it.url || '';
-      var ext = isExt(url);
-      var subs = it.login || soon ? [] : (it.sub || []).slice(0, SUB_MAX); // 로그인 필요·제작 중은 바로 가기 없음
-      var key = slug(it.id); // 카드 이름표: links.js 의 id
-      var hay = [it.name, it.desc, url, url && shown(url), it.tags, soon ? '준비 중 제작 중' : '', subs.map(function (s) { return s[0]; }).join(' ')].join(' ').toLowerCase();
-      var cls = ['card', key, soon ? 'soon' : (ext ? 'out' : 'in'), it.login && !soon && 'login', subs.length && 'sub'].filter(Boolean).join(' ');
+  // 바로 가기 판 (칩 화살표는 호버·포커스 때만 보인다 — 바깥 ↗ · 포털 안 →)
+  const subsNav = (it, subs) => !subs.length ? '' :
+    `<nav class="subs" aria-label="${esc(it.name)} 바로 가기"><div class="subs-in">` +
+      '<span class="subs-head"><span class="subs-label">자주 찾는 페이지</span>' +
+        '<button type="button" class="subs-more" aria-expanded="false" hidden><span class="t-open">더보기 <span class="n"></span></span><span class="t-close">접기</span>' + svg('chev', 12, 'chev') + '</button></span>' +
+      `<span class="subs-row">${subs.map(([name, url]) => link(url, esc(name) + svg(isExt(url) ? 'out' : 'in', 12, 'sa'))).join('')}</span>` +
+    '</div></nav>';
 
-      var body =
-        '<span class="ico lg tile" aria-hidden="true">' + esc(String(it.name || '?').trim().charAt(0).toUpperCase()) + '</span>' +
-        '<span class="body">' +
-          '<span class="top"><span class="name" title="' + esc(it.name) + '">' + esc(it.name) + '</span>' + badge(it, soon) +
-            (soon ? '' : svg(ext ? 'out' : 'in', 16, ext ? 'go ext' : 'go')) + '</span>' +
-          (it.desc ? '<span class="desc" title="' + esc(it.desc) + '">' + esc(it.desc) + '</span>' : '') +
-          (soon || it.desc === shown(url) ? '' : '<span class="url" translate="no">' + esc(shown(url)) + '</span>') +
-        '</span>';
+  // 카드
+  const card = (it) => {
+    const soon = !!it.soon || !it.url;              // 제작 중: 누를 수 없는 카드
+    const url = it.url || '';
+    const ext = isExt(url);
+    const subs = soon || it.login ? [] : (it.sub || []).slice(0, SUB_MAX); // 준비 중·로그인 필요(관리자 등)는 바로 가기 없음
+    const key = slug(it.id);                        // 카드 이름표: links.js 의 id
+    const hay = [it.name, it.desc, url, url && shown(url), it.tags, soon ? '준비 중 제작 중' : '', ...subs.map((s) => s[0])].join(' ').toLowerCase();
+    const cls = ['card', key, soon ? 'soon' : ext ? 'out' : 'in', it.login && !soon && 'login', subs.length && 'sub'].filter(Boolean).join(' ');
 
-      return '<article' + (key ? ' id="' + key + '"' : '') + ' class="' + cls + '" data-hay="' + esc(hay) + '"' + (soon ? ' aria-disabled="true"' : '') + '>' +
-        (soon ? '<div class="main">' + body + '</div>' : link(url, body, 'main')) +
-        subsNav(it, subs) +
-      '</article>';
-    }
+    const initial = esc(String(it.name || '?').trim().charAt(0).toUpperCase());
+    // 아이콘: 사이트 로고(logo)가 있으면 이미지, 없으면 이름 첫 글자
+    const tile = it.logo
+      ? `<span class="ico lg tile logo" aria-hidden="true" data-initial="${initial}"><img src="${esc(it.logo)}" alt="" width="24" height="24" decoding="async"></span>`
+      : `<span class="ico lg tile" aria-hidden="true">${initial}</span>`;
+    const body =
+      tile +
+      '<span class="body">' +
+        `<span class="top"><span class="name" title="${esc(it.name)}">${esc(it.name)}</span>${badge(it, soon)}` +
+          `${soon ? '' : svg(ext ? 'out' : 'in', 16, ext ? 'go ext' : 'go')}</span>` +
+        (it.desc ? `<span class="desc" title="${esc(it.desc)}">${esc(it.desc)}</span>` : '') +
+        (soon || it.desc === shown(url) ? '' : `<span class="url" translate="no">${esc(shown(url))}</span>`) +
+      '</span>';
 
-    // 섹션 (묶음 제목 + 카드 격자)
-    function section(g, gi) {
-      var key = slug(g.id) || 'g' + gi; // 섹션 이름표: links.js 의 id
-      var tone = 't' + ((gi % 4) + 1);
-      var tid = key + '-title';
-      return '<section id="' + key + '" class="sec ' + key + ' ' + tone + '" aria-labelledby="' + tid + '">' +
-        '<h2 id="' + tid + '"><span class="ico sm gi">' + svg(g.icon, 16) + '</span>' + esc(g.group) +
-          '<span class="pill count" data-total="' + g.items.length + '">' + g.items.length + '</span>' +
-          (g.note ? '<small>' + esc(g.note) + '</small>' : '') + '</h2>' +
-        '<div class="grid ' + key + '">' + g.items.map(card).join('') + '</div>' +
-      '</section>';
-    }
+    return `<article${key ? ` id="${key}"` : ''} class="${cls}" data-hay="${esc(hay)}"${soon ? ' aria-disabled="true"' : ''}>` +
+      (soon ? `<div class="main">${body}</div>` : link(url, body, 'main')) +
+      subsNav(it, subs) +
+    '</article>';
+  };
 
-    /* ── 그리기 ─────────────────────────────── */
-    var groups = (window.PORTAL_LINKS || []).filter(function (g) { return g && g.items && g.items.length; });
-    var root = document.getElementById('groups');
-    var total = groups.reduce(function (n, g) { return n + g.items.length; }, 0);
-    root.innerHTML = groups.map(section).join('');
+  // 섹션 (묶음 제목 + 카드 격자)
+  const section = (g, gi) => {
+    const key = slug(g.id) || 'g' + gi;             // 섹션 이름표: links.js 의 id
+    const tid = key + '-title';
+    const n = g.items.length;
+    return `<section id="${key}" class="sec ${key} t${(gi % 4) + 1}" aria-labelledby="${tid}">` +
+      `<h2 id="${tid}"><span class="ico sm gi">${svg(g.icon)}</span>${esc(g.group)}` +
+        `<span class="pill count" data-total="${n}">${n}</span>${g.note ? `<small>${esc(g.note)}</small>` : ''}</h2>` +
+      `<div class="grid ${key}">${g.items.map(card).join('')}</div>` +
+    '</section>';
+  };
 
-    /* ── 검색 ─────────────────────────────── */
-    var q = document.getElementById('q');
-    var box = document.getElementById('search');
-    var status = document.getElementById('status');
-    var empty = document.getElementById('empty');
-    var emptyTitle = document.getElementById('empty-title');
+  /* ── 그리기 ───────────────────────────────── */
+  const groups = (window.PORTAL_LINKS || []).filter((g) => g && g.items && g.items.length);
+  const total = groups.reduce((n, g) => n + g.items.length, 0);
+  const root = $('#groups');
+  root.innerHTML = groups.map(section).join('');
+  // 로고를 못 불러오면 이름 첫 글자로 돌아간다
+  $$('.tile.logo img', root).forEach((img) => img.addEventListener('error', () => {
+    const t = img.parentNode;
+    t.classList.remove('logo');
+    t.textContent = t.dataset.initial;
+  }, { once: true }));
+  $$('[data-icon]').forEach((el) => { el.innerHTML = svg(el.dataset.icon); }); // 화면에 고정된 아이콘(돋보기·지우기·보기 방식)
+  if (location.protocol === 'file:') $('.brand').setAttribute('href', 'index.html'); // 로컬 확인 때 로고가 폴더 목록을 열지 않게
 
-    function apply(syncUrl) {
-      var raw = q.value.trim();
-      var words = raw.toLowerCase().split(/\s+/).filter(Boolean);
-      var shownCount = 0;
-      box.classList.toggle('has-value', q.value.length > 0);
-      root.querySelectorAll('.sec').forEach(function (sec) {
-        var visible = 0;
-        sec.querySelectorAll('.card').forEach(function (c) {
-          var ok = words.every(function (w) { return c.dataset.hay.indexOf(w) >= 0; });
-          c.hidden = !ok;
-          if (ok) visible++;
-        });
-        sec.hidden = visible === 0;
-        var cnt = sec.querySelector('.count');
-        cnt.textContent = words.length ? visible + ' / ' + cnt.dataset.total : cnt.dataset.total;
-        shownCount += visible;
+  /* ── 바로 가기 크기 재기 ─────────────────────
+     접힌 높이(첫 줄까지)·펼친 높이(전체)를 재서 CSS 변수로 넣고,
+     둘째 줄 칩에 .x(펼칠 때 차례로 떠오름), 셋째 줄부터 .over(숨김)를 붙이고 둘째 줄 수를 '더보기 +N' 에 적는다 */
+  const ROW_PAD = 4;   // .subs-row 위아래 여백 · .subs-in 아래 여백 (각 4px)
+  const fitSubs = () => {
+    if (root.classList.contains('list')) return; // 리스트형은 바로 가기를 숨기므로 잴 것 없음
+    root.classList.add('measure');
+    $$('.subs', root).forEach((nav) => {
+      const box = $('.subs-in', nav);
+      const more = $('.subs-more', nav);
+      const chips = $$('.subs-row a', nav);
+      ['--subs-h', '--subs-c', '--subs-o'].forEach((v) => nav.style.removeProperty(v));
+      chips.forEach((a) => { a.classList.remove('x', 'over'); a.style.removeProperty('--k'); });
+      if (!nav.offsetParent || !chips.length) return;   // 숨은 카드(검색·리스트형)는 건너뜀
+
+      // 줄 나누기: 첫 줄은 늘 보임, 둘째 줄 .x, 셋째 줄부터 .over
+      const line1 = chips[0].offsetTop;
+      let line2 = null;
+      let k = 0;
+      chips.forEach((a) => {
+        const t = a.offsetTop;
+        if (t <= line1 + 2) return;
+        if (line2 === null) line2 = t;
+        if (t > line2 + 2) { a.classList.add('over'); return; }
+        a.classList.add('x');
+        a.style.setProperty('--k', k++);
       });
-      empty.hidden = shownCount > 0 || total === 0;
-      if (!shownCount && words.length) emptyTitle.textContent = '‘' + raw + '’에 맞는 링크가 없습니다';
-      status.textContent = words.length ? (shownCount ? shownCount + '개 찾음 · Enter 로 첫 결과 열기' : '결과 없음') : '';
-      if (syncUrl) {
-        var url = new URL(location.href);
-        if (raw) url.searchParams.set('q', raw); else url.searchParams.delete('q');
-        try { history.replaceState(null, '', url); } catch (e) {}
-      }
-      fitSubs();
-    }
 
-    // 바로 가기 크기 재기: 접힌 높이(첫 줄까지)와 펼친 높이(전체)를 재서 CSS 변수로 넣고,
-    // 첫 줄 밖에 있어 가려지는 칩에 .x(펼칠 때 차례로 떠오름)를 붙이고 그 수를 '더보기 +N' 에 적는다
-    function fitSubs() {
-      root.classList.add('measure');
-      root.querySelectorAll('.subs').forEach(function (nav) {
-        var box = nav.querySelector('.subs-in');
-        var more = nav.querySelector('.subs-more');
-        var chips = nav.querySelectorAll('.subs-row a');
-        ['--subs-h', '--subs-c', '--subs-o', '--subs-t'].forEach(function (v) { nav.style.removeProperty(v); });
-        nav.classList.remove('tight');
-        chips.forEach(function (a) { a.classList.remove('x', 'over'); a.style.removeProperty('--k'); });
-        if (!nav.offsetParent || !chips.length) return;
-        // 줄 위치: 첫 줄은 늘 보임, 둘째 줄은 펼칠 때(.x), 셋째 줄부터는 숨김(.over) — 펼쳐도 최대 2줄
-        var line = chips[0].offsetTop;
-        var line2 = null;
-        var k = 0;
-        chips.forEach(function (a) {
-          var t = a.offsetTop;
-          if (t <= line + 2) return;
-          if (line2 === null) line2 = t;
-          if (t > line2 + 2) { a.classList.add('over'); return; }
-          a.classList.add('x'); a.style.setProperty('--k', k++);
-        });
-        // 위치는 .over 로 셋째 줄을 숨긴 뒤에 잰다 — 판이 아래에 붙어 있어 숨기면 위쪽이 한 줄 내려오기 때문
-        var top = box.getBoundingClientRect().top;
-        var closed = Math.ceil(chips[0].getBoundingClientRect().bottom - top) + 8; // + 칩 줄 여백 4 + 판 아래 여백 4
-        var open = box.scrollHeight;
-        nav.style.setProperty('--subs-c', closed + 'px');
-        nav.style.setProperty('--subs-o', Math.max(open, closed) + 'px');
-        // 펼친 판이 카드 왼쪽 위 아이콘까지 올라가면 제목 줄을 접은 높이(--subs-t)로 펼친다
-        var tile = nav.closest('.card').querySelector('.tile');
-        var room = tile ? Math.floor(nav.getBoundingClientRect().bottom + 4 - tile.getBoundingClientRect().bottom - 8) : open;
-        if (k > 0 && open > room) {
-          var head = nav.querySelector('.subs-head').offsetHeight + (parseFloat(getComputedStyle(box).rowGap) || 0); // 제목 줄 + 간격(.subs-in 의 gap)
-          nav.classList.add('tight');
-          nav.style.setProperty('--subs-t', Math.max(open - head, closed) + 'px');
-        }
-        nav.style.setProperty('--subs-h', (closed - 4) + 'px'); // 판이 아래로 4px(포커스 링 여유) 나온 만큼 뺀다
-        more.hidden = k === 0;
-        more.querySelector('.n').textContent = '+' + k;
+      // 위치는 .over 로 셋째 줄을 숨긴 뒤에 잰다 — 판이 아래에 붙어 있어 숨기면 위쪽이 한 줄 내려오기 때문
+      const top = box.getBoundingClientRect().top;
+      const closed = Math.ceil(chips[0].getBoundingClientRect().bottom - top) + ROW_PAD * 2;
+      const open = box.scrollHeight;
+      nav.style.setProperty('--subs-c', closed + 'px');
+      nav.style.setProperty('--subs-o', Math.max(open, closed) + 'px');
+
+      nav.style.setProperty('--subs-h', (closed - ROW_PAD) + 'px'); // 판이 아래로 나온 만큼(포커스 링 여유) 뺀다
+      more.hidden = k === 0;
+      $('.n', more).textContent = '+' + k;
+    });
+    root.classList.remove('measure');
+  };
+
+  /* ── 보기 방식: 카드형(기본) · 리스트형 — 고른 것은 이 브라우저에 기억 ── */
+  const viewBtns = $$('.seg [data-view]');
+  const setView = (v, save) => {
+    v = v === 'list' ? 'list' : 'card';
+    root.classList.toggle('list', v === 'list');
+    viewBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === v)));
+    if (save) { try { localStorage.setItem(VIEW_KEY, v); } catch (e) { /* 저장 못 해도 동작 */ } }
+    if (save && v === 'card') fitSubs(); // 카드형으로 돌아오면 다시 잰다 (처음 열 때는 아래 apply 가 잰다)
+  };
+  let savedView = 'card';
+  try { savedView = localStorage.getItem(VIEW_KEY) || 'card'; } catch (e) { /* 사생활 보호 창 등 */ }
+  setView(savedView, false);
+  viewBtns.forEach((b) => b.addEventListener('click', () => setView(b.dataset.view, true)));
+
+  /* ── 검색 ─────────────────────────────────── */
+  const q = $('#q');
+  const box = $('#search');
+  const status = $('#status');
+  const empty = $('#empty');
+  const emptyTitle = $('#empty-title');
+  const viewbar = $('#viewbar');
+
+  const apply = (syncUrl) => {
+    const raw = q.value.trim();
+    const words = raw.toLowerCase().split(/\s+/).filter(Boolean);
+    let found = 0;
+    box.classList.toggle('has-value', q.value.length > 0);
+    $$('.sec', root).forEach((sec) => {
+      let visible = 0;
+      $$('.card', sec).forEach((c) => {
+        const ok = words.every((w) => c.dataset.hay.includes(w));
+        c.hidden = !ok;
+        if (ok) visible++;
       });
-      root.classList.remove('measure');
+      sec.hidden = visible === 0;
+      const cnt = $('.count', sec);
+      cnt.textContent = words.length ? `${visible} / ${cnt.dataset.total}` : cnt.dataset.total;
+      found += visible;
+    });
+    empty.hidden = found > 0 || total === 0;
+    viewbar.hidden = found === 0; // 보여 줄 카드가 없으면 보기 방식 버튼도 숨김
+    if (!found && words.length) emptyTitle.textContent = `‘${raw}’에 맞는 링크가 없습니다`;
+    // 보이는 글자는 짧게("3개"/"없음"), 화면 읽기에는 전체 안내
+    status.innerHTML = !words.length ? ''
+      : found ? `${found}개<span class="sr-only"> 찾음 · Enter 로 첫 결과 열기</span>`
+      : '없음<span class="sr-only"> · 검색 결과 없음</span>';
+    if (syncUrl) {
+      const url = new URL(location.href);
+      if (raw) url.searchParams.set('q', raw); else url.searchParams.delete('q');
+      try { history.replaceState(null, '', url); } catch (e) { /* file:// 등 */ }
     }
+    fitSubs();
+  };
+  const clear = (focus) => { q.value = ''; apply(true); if (focus) q.focus(); };
 
-    // 휴대폰: '더보기' 로 펼치고 접기 (한 번에 하나만, 바깥을 누르거나 Esc 로 닫힘)
-    function closeOpen(except) {
-      root.querySelectorAll('.card.open').forEach(function (c) {
-        if (c === except) return;
-        c.classList.remove('open');
-        c.querySelector('.subs-more').setAttribute('aria-expanded', 'false');
-      });
+  /* ── 바로 가기 '더보기' — 눌러서 펼치고 접기. 한 번에 하나만, 바깥을 누르거나 Esc 로 닫힘 ── */
+  const closeOpen = (except) => {
+    $$('.card.open', root).forEach((c) => {
+      if (c === except) return;
+      c.classList.remove('open');
+      $('.subs-more', c).setAttribute('aria-expanded', 'false');
+    });
+  };
+  root.addEventListener('click', (e) => {
+    const btn = e.target.closest('.subs-more');
+    if (!btn) return;
+    const c = btn.closest('.card');
+    const open = !c.classList.contains('open');
+    closeOpen(c);
+    c.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', String(open));
+  });
+  document.addEventListener('click', (e) => { if (!e.target.closest('.card.open')) closeOpen(); });
+
+  /* ── 시작 · 이벤트 ─────────────────────────── */
+  q.value = new URLSearchParams(location.search).get('q') || '';
+  if (total === 0) { empty.hidden = false; emptyTitle.textContent = '등록된 링크가 없습니다'; $('#reset').hidden = true; }
+  apply(false);
+
+  let fitQueued = false;
+  window.addEventListener('resize', () => {
+    if (fitQueued) return;
+    fitQueued = true;
+    requestAnimationFrame(() => { fitQueued = false; fitSubs(); });
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitSubs);
+
+  q.addEventListener('input', () => apply(true));
+  q.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || e.isComposing || !q.value.trim()) return;
+    const first = $('.card:not([hidden]) a.main', root);
+    if (first) { e.preventDefault(); first.click(); }
+  });
+  $('#clear').addEventListener('click', () => clear(true));
+  $('#reset').addEventListener('click', () => clear(true));
+  document.addEventListener('keydown', (e) => {
+    const typing = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName);
+    if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey && !typing) { e.preventDefault(); q.focus(); q.select(); }
+    if (e.key === 'Escape') {
+      if (document.activeElement === q) { if (q.value) clear(false); else q.blur(); }
+      else closeOpen();
     }
-    root.addEventListener('click', function (e) {
-      var btn = e.target.closest('.subs-more');
-      if (!btn) return;
-      var c = btn.closest('.card');
-      var open = !c.classList.contains('open');
-      closeOpen(c);
-      c.classList.toggle('open', open);
-      btn.setAttribute('aria-expanded', String(open));
-    });
-    document.addEventListener('click', function (e) { if (!e.target.closest('.card.open')) closeOpen(); });
-    var fitQueued = false;
-    window.addEventListener('resize', function () {
-      if (fitQueued) return;
-      fitQueued = true;
-      requestAnimationFrame(function () { fitQueued = false; fitSubs(); });
-    });
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitSubs);
-
-    function clear(focus) { q.value = ''; apply(true); if (focus) q.focus(); }
-
-    var initial = new URLSearchParams(location.search).get('q');
-    if (initial) q.value = initial;
-    if (total === 0) { empty.hidden = false; emptyTitle.textContent = '등록된 링크가 없습니다'; document.getElementById('reset').hidden = true; }
-    apply(false);
-
-    q.addEventListener('input', function () { apply(true); });
-    q.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' && !e.isComposing) {
-        var first = root.querySelector('.card:not([hidden]) a.main');
-        if (first && q.value.trim()) { e.preventDefault(); first.click(); }
-      }
-    });
-    document.getElementById('clear').addEventListener('click', function () { clear(true); });
-    document.getElementById('reset').addEventListener('click', function () { clear(true); });
-    document.addEventListener('keydown', function (e) {
-      var tag = (document.activeElement && document.activeElement.tagName) || '';
-      if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey && tag !== 'INPUT' && tag !== 'TEXTAREA') { e.preventDefault(); q.focus(); q.select(); }
-      if (e.key === 'Escape' && document.activeElement === q) { if (q.value) clear(false); else q.blur(); }
-      if (e.key === 'Escape' && document.activeElement !== q) closeOpen();
-    });
-  })();
+  });
+})();
 </script>
 </body>
 </html>
