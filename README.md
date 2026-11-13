@@ -1,6 +1,6 @@
 # its.itket.com — 아이티스 포털
 
-`https://its.itket.com/` 첫 화면. 아이티스의 대시보드·홈페이지·사내 도구 링크를 모았다 (회사 공용).
+`https://its.itket.com/` 첫 화면. 아이티스의 대시보드·홈페이지·업무 도구 링크를 모았다 (회사 공용).
 GitHub 조직 대표 Pages 사이트(`its-mkt/its-mkt.github.io`)라, 자체 도메인이 없는 저장소는 자동으로 `its.itket.com/<저장소 이름>/` 에서 열린다.
 
 | 경로 | 저장소 |

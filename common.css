@@ -1,0 +1,85 @@
+/* 아이티스 포털 공용 스타일 — index.html · 404.html 이 함께 쓴다
+ * 버튼·태그(.btn · .pill · .kbd · 칩 등)의 높이는 height 로 정하고 위아래 padding 은 0 — 좌우 padding 만 쓴다
+ * 간격·크기는 짝수 단위만: 2 / 4 / 8 / 12 / 16 / 20 / 24 / 28 / 32 / 40 / 48 / 64px (글자 크기는 예외, 테두리 1px 은 헤어라인 예외)
+ */
+:root {
+  color-scheme: light dark;
+
+  /* 색 */
+  --bg: #f5f6f8; --card: #ffffff; --text: #111827; --muted: #5b6472; --faint: #8b93a1;
+  --line: #e4e7ec; --line-strong: #cfd5de; --chip: #f2f4f7;
+  --accent: #2563eb; --accent-hover: #1d4ed8; --accent-ink: #ffffff; --accent-soft: #eef3ff; --accent-tint: #e3ebff;
+  --warn: #b45309; --warn-soft: #fff7ed;
+  --tone-1: #2563eb; --tone-1-soft: #eef3ff;
+  --tone-2: #0f9f6e; --tone-2-soft: #e9f8f2;
+  --tone-3: #c2410c; --tone-3-soft: #fff1e8;
+  --tone-4: #7c3aed; --tone-4-soft: #f3eeff;
+  --shadow: 0 2px 2px rgba(16, 24, 40, .04), 0 4px 16px rgba(16, 24, 40, .06);
+
+  /* 간격 (짝수 단위) */
+  --s-2: 2px; --s-4: 4px; --s-8: 8px; --s-12: 12px; --s-16: 16px; --s-20: 20px; --s-24: 24px;
+  --s-28: 28px; --s-32: 32px; --s-40: 40px; --s-48: 48px; --s-64: 64px;
+
+  /* 모서리 */
+  --r-4: 4px; --r-8: 8px; --r-12: 12px; --r-16: 16px; --r-full: 1000px;
+
+  /* 글자 크기 (짝수 규칙 예외) */
+  --fs-2xs: 10px; --fs-xs: 12px; --fs-sm: 14px; --fs-md: 16px; --fs-lg: 18px; /* 짝수 단위만 */
+
+  /* 포커스 테두리 · 움직임 */
+  --ring-w: 2px; --ring-color: var(--accent);
+  --dur: .15s;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1014; --card: #161a21; --text: #e6e8ec; --muted: #a2a9b5; --faint: #737b88;
+    --line: #252a33; --line-strong: #353c48; --chip: #1f242d;
+    --accent: #6ea8fe; --accent-hover: #93bfff; --accent-ink: #0b1220; --accent-soft: #1a2336; --accent-tint: #1e2a42;
+    --warn: #f5a524; --warn-soft: #2a1f0d;
+    --tone-1: #6ea8fe; --tone-1-soft: #1a2336;
+    --tone-2: #4ccf9f; --tone-2-soft: #13271f;
+    --tone-3: #fb8a52; --tone-3-soft: #2c1a10;
+    --tone-4: #b294ff; --tone-4-soft: #221b36;
+    --shadow: 0 2px 2px rgba(0, 0, 0, .3), 0 8px 16px rgba(0, 0, 0, .35);
+  }
+}
+
+/* 기본 */
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); line-height: 1.5; word-break: keep-all;
+  font-family: 'Pretendard Variable', Pretendard, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+a, button, input { touch-action: manipulation; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* 버튼 — .btn (기본: 테두리형) · .btn.primary (채움형) · .btn.lg (큰 버튼) */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--s-8); height: 40px; padding: 0 var(--s-16);
+  border: 1px solid var(--line-strong); border-radius: var(--r-8); background: var(--card); color: var(--text);
+  font: inherit; font-size: var(--fs-sm); font-weight: 600; text-decoration: none; cursor: pointer;
+  transition: background-color var(--dur) ease, border-color var(--dur) ease, color var(--dur) ease; }
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.btn.primary:hover { background: var(--accent-hover); color: var(--accent-ink); }
+.btn.lg { height: 48px; padding: 0 var(--s-20); border-radius: var(--r-12); font-size: 14px; }
+.btn:focus-visible { outline: var(--ring-w) solid var(--ring-color); outline-offset: var(--s-2); }
+
+/* 알약 — 개수·표시 (.pill · .pill.warn · .pill.mute) */
+.pill { display: inline-flex; align-items: center; flex: none; height: 20px; padding: 0 var(--s-8); border-radius: var(--r-full);
+  background: var(--chip); color: var(--muted); font-size: var(--fs-2xs); font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+
+/* 아이콘 상자 — 묶음 색(--tone/--soft)을 따른다 (.ico.sm 24px · .ico.lg 40px) */
+.ico { flex: none; display: grid; place-items: center; background: var(--soft, var(--accent-soft)); color: var(--tone, var(--accent)); }
+.ico.sm { width: 24px; height: 24px; border-radius: var(--r-8); }
+.ico.lg { width: 40px; height: 40px; border-radius: var(--r-8); font-weight: 800; font-size: 18px; }
+
+/* 키 표시 */
+.kbd { display: inline-flex; align-items: center; justify-content: center; height: 20px; padding: 0 var(--s-8);
+  font-family: inherit; font-size: 12px; font-weight: 600; line-height: 1; color: var(--faint); background: var(--bg);
+  border: 1px solid var(--line); border-bottom-width: 2px; border-radius: var(--r-4); vertical-align: middle; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0s !important; }
+}
