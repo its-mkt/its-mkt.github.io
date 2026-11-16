@@ -54,8 +54,8 @@ window.PORTAL_LINKS = [
         tags: 'analytics 애널리틱스 GA4 방문 유입 전환 종합 요약 전환 분석 페이지 상품 URL 분석 페이지 GA4 아이티켓 itket 온코어 oncore',
         subLabel: '사이트',
         sub: [
-          ['아이티켓', '/analytics/'],
-          ['온코어', ''],
+          ['아이티켓', '/analytics/itket'],
+          ['온코어', '/analytics/oncore'],
         ],
       },
     ],
