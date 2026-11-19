@@ -22,7 +22,7 @@
 | `links.js` | **링크 목록 — 링크 추가·수정은 이 파일만** 고친다 (묶음 `group` → 링크 `items`, 필드 설명은 파일 맨 위 주석) |
 | `index.html` | 화면(목록 그리기·검색). 링크를 여기에 직접 쓰지 않는다 |
 | `common.css` | 공용 스타일 — 색·간격·모서리 토큰, 기본 리셋, 공용 컴포넌트(`.btn`·`.pill`·`.ico`·`.kbd`·`.ibtn` 아이콘 버튼·`.chip` 칩) — 새 버튼·칩은 이걸 먼저 쓰고 위치·강조색만 덧붙인다. 아이콘 버튼 크기는 토큰 `--ibtn`(28px) — ☆·⌄ 자리 계산도 이 값을 쓴다. index·404 가 함께 쓴다 (404 는 `/common.css` 절대 경로) |
-| `icons/` | 카드 아이콘(각 사이트 파비콘·로고, 정사각형 PNG·SVG). `links.js` 의 `logo` 로 연결, 아이티켓은 `logo.png`(IT 마크), 그룹웨어는 그룹웨어 파비콘(/its2/include/common/favicon.ico)을 바꾼 `icons/groupware.png` |
+| `icons/` | 카드 아이콘(각 사이트 파비콘·로고, 정사각형 PNG·SVG). `links.js` 의 `logo` 로 연결, 아이티켓은 `logo.png`(IT 마크), 그룹웨어는 그룹웨어 파비콘(/its2/include/common/favicon.ico)을 바꾼 `icons/groupware.png`, 웹메일은 후이즈메일 파비콘(192px)을 받은 `icons/mail.png` |
 | `404.html` | 없는 주소 안내 → 포털로 |
 | `favicon.png` | 파비콘(512px, 흰 둥근 바탕 — 어두운 탭에서도 보이게). 원본은 회사 로고 PNG 의 여백만 잘라 줄인 것 |
 | `logo.png` · `logo-dark.png` | 머리 로고(`.mark`, 256px, 투명 배경) — 다크 모드는 IT 글자만 흰색인 `logo-dark.png` |
@@ -32,7 +32,7 @@
 ## 규칙
 
 - **공개 페이지다.** 관리자 화면 주소(고도몰 관리자, Supabase, Apps Script 편집기 등), 비밀번호, 내부 문서·시트 주소는 넣지 않는다
-  - 예외: 그룹웨어처럼 회사 사람들이 함께 쓰는 로그인 화면은 넣어도 된다 (사용자 결정 2026-11-13 — 포털은 마케팅팀 전용이 아니라 회사 공용). 이카운트 ERP 로그인(`https://login.ecount.com/`, id `erp`)·급여명세서(`https://pay.ecount.com/`)·고객 포털(`https://c-portal.ecount.com/`) 로그인(같은 카드의 칩)도 같은 예외로 추가 (2026-11-16)
+  - 예외: 그룹웨어처럼 회사 사람들이 함께 쓰는 로그인 화면은 넣어도 된다 (사용자 결정 2026-11-13 — 포털은 마케팅팀 전용이 아니라 회사 공용). 이카운트 ERP 로그인(`https://login.ecount.com/`, id `erp`)·급여명세서(`https://pay.ecount.com/`)·고객 포털(`https://c-portal.ecount.com/`) 로그인(같은 카드의 칩)도 같은 예외로 추가 (2026-11-16). 회사 웹메일(후이즈메일) 로그인 `http://w.itket.com/`(id `mail`)도 같은 예외로 추가 (2026-11-19) — https 는 인증서가 `*.whoisworks.com` 이라 맞지 않아 http 로 둔다
   - 예외: 아이티켓 고도몰 관리자 로그인 `https://gdadmin.itket.com/` 은 위험(공개 페이지에 관리자 주소 노출)을 알고 넣기로 함 (사용자 결정 2026-11-13, 고도몰(NHN커머스) 로그인과 용도가 달라 따로 둔다). 2026-11-16 사용자 결정으로 쇼핑몰 4곳 관리자 로그인(gdadmin.itket.com·gdadmin.zbyhp.co.kr·gdadmin.cadkorea.co.kr·gdadmin.on-core.co.kr)을 모두 넣는다 (11-13 의 "온코어 관리자는 두지 않는다"는 철회). 쇼핑몰별 카드를 만들지 않고 `고도몰 관리자` 카드 하나(id `admin`, `login: true`)에 바로 가기 칩(`subLabel: '관리자 로그인'`)으로 둔다. 같은 날 사용자 결정으로 따로 있던 `고도몰` 카드(id `godo`, NHN커머스 통합 관리자 로그인 `accounts.godo.co.kr`)는 없애고 이 카드의 마지막 칩 `통합 관리자` 로 합쳤다 (11-13 의 "따로 둔다"는 철회). 관리자 로그인 첫 화면만 넣고, 그 밖의 관리자·관리자 안쪽 주소는 여전히 넣지 않는다. 그래서 index.html·404.html 의 `<meta name="robots" content="noindex, nofollow">` 는 빼지 않는다
 - 같은 포털 안 링크는 경로만(`/ad-insight/`), 바깥 사이트는 `https://` 전체 주소 — 바깥 링크는 화면에서 자동으로 새 탭
 - 외부 스크립트는 넣지 않는다 (폰트 CSS 하나만 jsdelivr). 빌드 도구를 들이기 전에 먼저 사용자와 상의한다

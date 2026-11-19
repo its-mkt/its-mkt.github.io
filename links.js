@@ -24,7 +24,7 @@
  * 묶음 아이콘 icon (선택): 'chart' | 'store' | 'office' | 'draft' — 없으면 링크 모양
  *
  * 공개 페이지다 — 관리자 화면 주소, 비밀번호, 내부 문서 주소는 넣지 않는다.
- * (예외: 그룹웨어 같은 회사 공용 로그인 화면, 그리고 사용자가 정한 '고도몰 관리자' 카드 하나(NHN커머스 통합 관리자 + 쇼핑몰 4곳 관리자 로그인 칩) — 모두 login: true. 자세한 건 CLAUDE.md)
+ * (예외: 그룹웨어·웹메일 같은 회사 공용 로그인 화면, 그리고 사용자가 정한 '고도몰 관리자' 카드 하나(NHN커머스 통합 관리자 + 쇼핑몰 4곳 관리자 로그인 칩) — 모두 login: true. 자세한 건 CLAUDE.md)
  */
 window.PORTAL_LINKS = [
   {
@@ -107,6 +107,7 @@ window.PORTAL_LINKS = [
     note: '업무에 쓰는 사이트',
     items: [
       { id: 'gw', logo: 'icons/groupware.png', name: '그룹웨어', url: 'https://itketweb.cafe24.com/its/', desc: '사내 업무일지 · 회의 자료', tags: 'groupware 그룹웨어 업무일지 결재 회의 사내 아이티스정보통신', login: true },
+      { id: 'mail', logo: 'icons/mail.png', name: '웹메일', url: 'http://w.itket.com/', desc: '회사 메일 (후이즈메일)', tags: 'mail webmail email 메일 웹메일 이메일 후이즈 후이즈메일 whois 회사 메일 사내 메일', login: true },
       { id: 'erp', logo: 'icons/ecount.png', name: '이카운트 ERP', url: 'https://login.ecount.com/', desc: '재고 · 회계 · 판매 · 급여', self: false, tags: 'ecount 이카운트 ERP erp 재고 회계 판매 구매 매출 매입 거래처 전표 급여 급여명세서 명세서 월급 userpay pay 페이 고객 포털 고객포털 거래처 포털 c-portal cportal 견적 미수', login: true,
         subLabel: '로그인',
         sub: [
