@@ -228,6 +228,11 @@
   }
 
   /* ── 빈 상태 · 아래쪽 ──────────────────────── */
+  /* 묶음 빈 상태(links.js 의 empty) — 카드 한 장 자리, 높이는 fitSubs() 가 잰 카드 높이(--card-h) */
+  .slot-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--s-4); min-height: var(--card-h, auto); padding: var(--card-pad);
+    border: 1px dashed var(--line-strong); border-radius: var(--r-16); text-align: center; color: var(--muted); font-size: var(--fs-sm); }
+  .slot-empty b { color: var(--text); font-size: var(--fs-md); }
+  #groups.list .slot-empty { min-height: 0; padding: var(--s-24) var(--card-pad); border: 0; border-radius: 0; }
   .empty { padding: var(--s-48) var(--s-16); border: 1px dashed var(--line-strong); border-radius: var(--r-16); text-align: center; color: var(--muted); }
   .empty h2 { margin: 0 0 var(--s-4); overflow-wrap: anywhere; color: var(--text); font-size: var(--fs-md); }
   .empty p { margin: 0 0 var(--s-16); font-size: var(--fs-sm); }
@@ -430,11 +435,13 @@
     const key = slug(g.id) || 'g' + gi;             // 섹션 이름표: links.js 의 id
     const tone = 't' + ((gi % 4) + 1);              // 묶음 색 1→4 반복
     g.items.forEach((it) => { if (it.id && !it.soon && it.url) byId[slug(it.id)] = { it, tone }; });
-    return secBox({ key, tone, icon: g.icon, title: g.group, note: g.note, cards: g.items.map((it) => card(it)).join(''), n: g.items.length });
+    const cards = g.items.length ? g.items.map((it) => card(it)).join('')
+      : `<div class="slot-empty"><b>${esc(g.empty.title || '')}</b>${g.empty.desc ? `<span>${esc(g.empty.desc)}</span>` : ''}</div>`; // 카드가 없는 묶음 = 빈 상태 한 칸
+    return secBox({ key, tone, icon: g.icon, title: g.group, note: g.note, cards, n: g.items.length });
   };
 
   /* ── 그리기 ───────────────────────────────── */
-  const groups = (window.PORTAL_LINKS || []).filter((g) => g && g.items && g.items.length);
+  const groups = (window.PORTAL_LINKS || []).filter((g) => g && g.items && (g.items.length || g.empty)); // 빈 묶음은 empty 가 있을 때만 남긴다
   const total = groups.reduce((n, g) => n + g.items.length, 0);
   const root = $('#groups');
   root.innerHTML = groups.map(section).join('');
@@ -492,6 +499,8 @@
       moreText(more, nav.closest('.card').classList.contains('open'));
     });
     root.classList.remove('measure');
+    const ref = $('.sec:not([hidden]) .card:not([hidden])', root); // 빈 상태 칸을 카드 한 장과 같은 높이로
+    if (ref) root.style.setProperty('--card-h', ref.offsetHeight + 'px');
   };
 
   /* ── 보기 방식: 카드형(기본) · 리스트형 — 고른 것은 이 브라우저에 기억 ── */
@@ -529,7 +538,7 @@
         c.hidden = !ok;
         if (ok) visible++;
       });
-      sec.hidden = visible === 0;
+      sec.hidden = visible === 0 && (words.length > 0 || !$('.slot-empty', sec)); // 빈 상태 묶음은 검색 중에만 숨김
       const cnt = $('.count', sec);
       cnt.textContent = words.length ? `${visible} / ${cnt.dataset.total}` : cnt.dataset.total;
       found += visible;

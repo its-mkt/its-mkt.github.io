@@ -21,6 +21,8 @@
  *   soon : true 면 '준비 중' — 누를 수 없는 흐린 카드, url·sub 없어도 된다 (선택)
  *   login: true 면 '로그인 필요' 표시 (선택). sub 를 적으면 바로 가기도 나온다 (고도몰 관리자 카드의 쇼핑몰별 관리자처럼)
  *
+ * 묶음 빈 상태 empty (선택): { title, desc } — items 가 비어도 묶음을 남기고 카드 한 장 크기의 빈 상태를 보여 준다 (검색 중엔 숨김)
+ *
  * 묶음 아이콘 icon (선택): 'chart' | 'store' | 'office' | 'draft' — 없으면 링크 모양
  *
  * 공개 페이지다 — 관리자 화면 주소, 비밀번호, 내부 문서 주소는 넣지 않는다.
@@ -141,14 +143,7 @@ window.PORTAL_LINKS = [
     group: '시안 · 미리보기',
     icon: 'draft',
     note: '작업 중인 화면',
-    items: [
-      { id: 'renewal', logo: 'icons/oncore.png', name: '온코어 리뉴얼 제안서', url: '/on-core-renewal/renewal-plan.html', desc: '홈페이지 리뉴얼 기획안 · 시안', tags: 'oncore 리뉴얼 시안 제안서 실행 계획 디자인 시안',
-        sub: [
-          ['제안서', '/on-core-renewal/'],
-          ['디자인 시안', '/on-core-renewal/renewal-plan.html'],
-          ['실행 계획', '/on-core-renewal/project-plan.html'],
-        ],
-      },
-    ],
+    empty: { title: '진행 중인 시안이 없습니다', desc: '새 시안이 생기면 이곳에 바로 가기를 둡니다' },
+    items: [],
   },
 ];
