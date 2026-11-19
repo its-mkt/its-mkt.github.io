@@ -43,7 +43,7 @@ window.PORTAL_LINKS = [
         subLabel: '사이트',
         sub: [
           ['아이티켓', '/ad-insight/itket'],
-          ['온코어', ''],
+          ['온코어', '/ad-insight/oncore'],
         ],
       },
       {
