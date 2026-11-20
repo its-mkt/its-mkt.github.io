@@ -136,6 +136,7 @@ window.PORTAL_LINKS = [
           ['OpenAI 광고', 'https://ads.openai.com/auth/login'],
         ],
       },
+      { id: 'pagefy', name: 'Pagefy', url: '/pagefy/', desc: '통이미지 디자인(PSD) → HTML 마크업 변환', tags: 'pagefy 페이지파이 PSD 상세페이지 마크업 HTML 변환 통이미지 랜딩 콘텐츠 디자인 퍼블리싱 claude 클로드 AI', login: true },
     ],
   },
   {
